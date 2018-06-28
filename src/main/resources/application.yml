@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: @project.env@
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+
