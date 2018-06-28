@@ -22,6 +22,7 @@ public class UserTicketServiceImpl implements UserTicketService {
         if(user != null) {
             String ticket = UUID.randomUUID().toString().replaceAll("-", "");
             Cookie ticketCookie = new Cookie("ticket", ticket);
+            ticketCookie.setHttpOnly(true);
             ticketCookie.setMaxAge(THIRTY_MINUTES);
             response.addCookie(ticketCookie);
             logger.info("user: {} bind ticket: {}, expired in {} seconds",user.getUsername(), ticket, ticketCookie.getMaxAge());

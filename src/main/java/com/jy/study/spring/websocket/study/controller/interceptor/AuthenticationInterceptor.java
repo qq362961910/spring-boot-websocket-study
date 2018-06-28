@@ -16,16 +16,6 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
     }
 
     @Override
-    public void postSend(Message<?> message, MessageChannel channel, boolean sent) {
-
-    }
-
-    @Override
-    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
-
-    }
-
-    @Override
     public boolean preReceive(MessageChannel channel) {
         return false;
     }
@@ -35,8 +25,4 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
         return null;
     }
 
-    @Override
-    public void afterReceiveCompletion(Message<?> message, MessageChannel channel, Exception ex) {
-
-    }
 }
