@@ -16,6 +16,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.enableSimpleBroker("/topic");
         //客户端请求服务端使用@MessageMapping注解方法时添加的前缀
         config.setApplicationDestinationPrefixes("/app");
+        //指定点对点消息前缀
+        config.setUserDestinationPrefix("/user");
     }
 
     @Override

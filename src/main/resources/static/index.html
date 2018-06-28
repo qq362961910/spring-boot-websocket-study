@@ -13,7 +13,7 @@
 <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
     enabled. Please enable
     Javascript and reload this page!</h2></noscript>
-<div id="main-content" class="container">
+<div id="main-content" class="container" style="height: 600px">
     <div class="row">
         <div class="col-md-6">
             <form class="form-inline">
@@ -36,7 +36,7 @@
             </form>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="height: 470px; max-height: 470px; overflow-x: hidden">
         <div class="col-md-12">
             <table id="conversation" class="table table-striped">
                 <thead>
@@ -48,6 +48,9 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div style="margin-bottom: 0; margin-right: 0">
+        <div class="col-md-4 pull-right">当前时间: <span id="current-time">2012-10-10 00:00:00</span></div>
     </div>
 </div>
 </body>

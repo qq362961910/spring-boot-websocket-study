@@ -11,6 +11,9 @@ import org.springframework.web.util.HtmlUtils;
 @Controller
 public class GreetingController {
 
+    /**
+     * 广播
+     * */
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")//broadcast to all subscribers "/topic/greetings"
     public Greeting greeting(HelloMessage hello) {
@@ -19,10 +22,19 @@ public class GreetingController {
         return greeting;
     }
 
+    /**
+     * 点对点
+     * */
     @SendToUser("/topic/echo")
     @MessageMapping("/echo")
     public String echo(String message) {
         return message;
     }
+
+
+
+
+
+
 
 }

@@ -18,11 +18,14 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
+        stompClient.subscribe('/topic/greetings', function (result) {
+            showGreeting(JSON.parse(result.body).content);
         });
-        stompClient.subscribe('/user/topic/echo', function (greeting) {
-            showGreeting(greeting.body);
+        stompClient.subscribe('/user/topic/echo', function (result) {
+            showGreeting(result.body);
+        });
+        stompClient.subscribe('/topic/sync/time', function (result) {
+            showCurrentTime(result.body);
         });
     });
 }
@@ -46,6 +49,10 @@ function echo() {
 function showGreeting(message) {
     $("#greetings").append("<tr><td>" + message + "</td></tr>");
 }
+function showCurrentTime(time) {
+    $("#current-time").text(time);
+}
+
 
 $(function () {
     $("form").on('submit', function (e) {
