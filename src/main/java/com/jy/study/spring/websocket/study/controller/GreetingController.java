@@ -1,5 +1,6 @@
 package com.jy.study.spring.websocket.study.controller;
 
+import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import com.jy.study.spring.websocket.study.model.Greeting;
 import com.jy.study.spring.websocket.study.model.HelloMessage;
 import org.slf4j.Logger;
@@ -16,13 +17,14 @@ public class GreetingController {
 
     private static final Logger logger = LoggerFactory.getLogger(GreetingController.class);
 
+    private SecurityHelper securityHelper;
+
     /**
      * 广播
      * */
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")//broadcast to all subscribers "/topic/greetings"
     public Greeting greeting(HelloMessage hello) {
-        logger.info("GreetingController#greeting(), current thread: {}", Thread.currentThread().getName());
         Greeting greeting = new Greeting();
         greeting.setContent("Hello, " + HtmlUtils.htmlEscape(hello.getUsername()) + "!");
         return greeting;
@@ -34,14 +36,11 @@ public class GreetingController {
     @SendToUser("/topic/echo")
     @MessageMapping("/echo")
     public String echo(String message) {
-        logger.info("GreetingController#echo(), current thread: {}", Thread.currentThread().getName());
         return message;
     }
 
 
-
-
-
-
-
+    public GreetingController(SecurityHelper securityHelper) {
+        this.securityHelper = securityHelper;
+    }
 }

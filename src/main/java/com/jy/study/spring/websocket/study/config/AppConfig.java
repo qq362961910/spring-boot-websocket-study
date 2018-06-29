@@ -4,6 +4,7 @@ import com.jy.study.spring.websocket.study.controller.interceptor.Authentication
 import com.jy.study.spring.websocket.study.controller.interceptor.ConnectionInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebsocketConnectionInterceptor;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
+import com.jy.study.spring.websocket.study.listener.WebSocketConnectionStateListener;
 import com.jy.study.spring.websocket.study.service.UserTicketService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,5 +30,10 @@ public class AppConfig {
     @Bean
     public ConnectionInterceptor connectionInterceptor() {
         return new ConnectionInterceptor();
+    }
+
+    @Bean
+    public WebSocketConnectionStateListener webSocketConnectionStateListener() {
+        return new WebSocketConnectionStateListener();
     }
 }
