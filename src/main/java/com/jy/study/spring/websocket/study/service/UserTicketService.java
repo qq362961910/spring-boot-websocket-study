@@ -8,4 +8,6 @@ public interface UserTicketService {
 
     void bindTicket(User user, HttpServletResponse response);
 
+    User queryUserByTicket(String ticket);
+
 }

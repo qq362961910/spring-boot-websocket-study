@@ -1,6 +1,7 @@
 package com.jy.study.spring.websocket.study.config;
 
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
+import com.jy.study.spring.websocket.study.controller.interceptor.WebsocketConnectionInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -13,6 +14,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private AuthenticationInterceptor authenticationInterceptor;
+    private WebsocketConnectionInterceptor websocketConnectionInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -26,7 +28,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/websocket").setAllowedOrigins("*").withSockJS().setInterceptors(websocketConnectionInterceptor);
     }
 
     /**
@@ -37,7 +39,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(authenticationInterceptor);
     }
 
-    public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor) {
+    public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor, WebsocketConnectionInterceptor websocketConnectionInterceptor) {
         this.authenticationInterceptor = authenticationInterceptor;
+        this.websocketConnectionInterceptor = websocketConnectionInterceptor;
     }
+
 }
