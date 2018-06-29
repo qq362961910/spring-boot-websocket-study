@@ -20,9 +20,10 @@ public class AppConfig {
         return new WebsocketConnectionInterceptor();
     }
     @Bean
-    public AuthenticationInterceptor authenticationInterceptor(UserTicketService userTicketService) {
+    public AuthenticationInterceptor authenticationInterceptor(UserTicketService userTicketService, SecurityHelper securityHelper) {
         AuthenticationInterceptor authenticationInterceptor = new AuthenticationInterceptor();
         authenticationInterceptor.setUserTicketService(userTicketService);
+        authenticationInterceptor.setSecurityHelper(securityHelper);
         return authenticationInterceptor;
     }
     @Bean
