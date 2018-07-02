@@ -1,6 +1,7 @@
 package com.jy.study.spring.websocket.study.controller.interceptor;
 
 import com.jy.study.spring.websocket.study.entity.User;
+import com.jy.study.spring.websocket.study.exception.StompException;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import com.jy.study.spring.websocket.study.service.UserTicketService;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
             //拦截消息
             if(SimpMessageType.MESSAGE == simpMessageHeaderAccessor.getMessageType()) {
                 logger.warn("session id: {}, without login user, discard [message]: {}", sessionId, message.getPayload());
-                return null;
+                throw new StompException("authentication failed exception");
             } else if(SimpMessageType.SUBSCRIBE == simpMessageHeaderAccessor.getMessageType()) {
                 //拦截订阅
                 if(!"/topic/p2p".equals(simpMessageHeaderAccessor.getDestination())) {

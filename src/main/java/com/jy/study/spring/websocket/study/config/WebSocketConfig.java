@@ -2,6 +2,7 @@ package com.jy.study.spring.websocket.study.config;
 
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebsocketConnectionInterceptor;
+import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -15,6 +16,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private AuthenticationInterceptor authenticationInterceptor;
     private WebsocketConnectionInterceptor websocketConnectionInterceptor;
+    private AppStompErrorHandler appStompErrorHandler;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -28,8 +30,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket").setAllowedOrigins("*").withSockJS().setInterceptors(websocketConnectionInterceptor);
+        registry.setErrorHandler(appStompErrorHandler)
+                .addEndpoint("/websocket").setAllowedOrigins("*").withSockJS()
+                .setInterceptors(websocketConnectionInterceptor);
     }
+
+
 
     /**
      * 配置客户端入站通道拦截器
@@ -39,9 +45,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(authenticationInterceptor);
     }
 
-    public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor, WebsocketConnectionInterceptor websocketConnectionInterceptor) {
+    public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor, WebsocketConnectionInterceptor websocketConnectionInterceptor, AppStompErrorHandler appStompErrorHandler) {
         this.authenticationInterceptor = authenticationInterceptor;
         this.websocketConnectionInterceptor = websocketConnectionInterceptor;
+        this.appStompErrorHandler = appStompErrorHandler;
     }
-
 }
