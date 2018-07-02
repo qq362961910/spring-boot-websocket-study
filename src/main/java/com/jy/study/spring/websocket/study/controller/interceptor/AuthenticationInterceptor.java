@@ -28,7 +28,7 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
         String ticket = (String)SimpAttributesContextHolder.getAttributes().getAttribute("ticket");
         User user = userTicketService.queryUserByTicket(ticket);
         if(user == null) {
-            String sessionId = SimpMessageHeaderAccessor.wrap(message).getSessionId();
+            String sessionId = simpMessageHeaderAccessor.getSessionId();
             //拦截消息
             if(SimpMessageType.MESSAGE == simpMessageHeaderAccessor.getMessageType()) {
                 logger.warn("session id: {}, without login user, discard [message]: {}", sessionId, message.getPayload());

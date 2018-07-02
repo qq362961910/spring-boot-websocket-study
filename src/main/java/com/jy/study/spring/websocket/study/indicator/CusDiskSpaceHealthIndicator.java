@@ -19,7 +19,7 @@ public class CusDiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
     @Autowired
     public CusDiskSpaceHealthIndicator(
-        @Value("${health.filestore.path:/home/amen/tmp}") String path,
+        @Value("${health.filestore.path:${java.io.tmpdir}}") String path,
         @Value("${health.filestore.threshold.bytes:10485760}") long thresholdBytes)
         throws IOException {
         fileStore = Files.getFileStore(Paths.get(path));
