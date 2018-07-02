@@ -19,13 +19,13 @@ function connect() {
         setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/p2p', function (result) {
-            showGreeting(result.body);
+            alertContent(result.body);
         });
         stompClient.subscribe('/topic/greetings', function (result) {
-            showGreeting(JSON.parse(result.body).content);
+            appendContent(JSON.parse(result.body).content);
         });
         stompClient.subscribe('/user/topic/echo', function (result) {
-            showGreeting(result.body);
+            appendContent(result.body);
         });
         stompClient.subscribe('/topic/sync/time', function (result) {
             showCurrentTime(result.body);
@@ -49,11 +49,14 @@ function echo() {
     stompClient.send("/app/echo", {}, $("#name").val());
 }
 
-function showGreeting(message) {
+function appendContent(message) {
     $("#greetings").append("<tr><td>" + message + "</td></tr>");
 }
 function showCurrentTime(time) {
     $("#current-time").text(time);
+}
+function alertContent(message) {
+    window.alert(message);
 }
 
 

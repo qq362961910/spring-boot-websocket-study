@@ -1,0 +1,4 @@
+application:
+  websocket:
+    session:
+      p2p-simp-subscription-id: /topic/p2p

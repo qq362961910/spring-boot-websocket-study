@@ -1,8 +1,10 @@
 package com.jy.study.spring.websocket.study.controller.interceptor;
 
+import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.exception.StompException;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
+import com.jy.study.spring.websocket.study.helper.SessionHelper;
 import com.jy.study.spring.websocket.study.service.UserTicketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +22,13 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
 
     private UserTicketService userTicketService;
     private SecurityHelper securityHelper;
+    private SessionHelper sessionHelper;
+    private AppProperties appProperties;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
-//        SimpMessageHeaderAccessor accessor =
-//            MessageHeaderAccessor.getAccessor(message.getHeaders(), SimpMessageHeaderAccessor.class);
+//        SimpMessageHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message.getHeaders(), SimpMessageHeaderAccessor.class);
         String ticket = (String)SimpAttributesContextHolder.getAttributes().getAttribute("ticket");
         User user = userTicketService.queryUserByTicket(ticket);
         if(user == null) {
@@ -36,9 +39,12 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
                 throw new StompException("authentication failed exception");
             } else if(SimpMessageType.SUBSCRIBE == simpMessageHeaderAccessor.getMessageType()) {
                 //拦截订阅
-                if(!"/topic/p2p".equals(simpMessageHeaderAccessor.getDestination())) {
+                if(!appProperties.getP2pSimpSubscriptionId().equals(simpMessageHeaderAccessor.getDestination())) {
                     logger.warn("session id: {}, without login user, discard [subscribe]: {} ", sessionId, simpMessageHeaderAccessor.getDestination());
                     return null;
+                } else {
+                    sessionHelper.setSessionP2pSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());
+                    logger.info("record session: {}, simpSubscriptionId: {}", sessionId, simpMessageHeaderAccessor.getSubscriptionId());
                 }
             }
         }
@@ -46,20 +52,10 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
         return message;
     }
 
-    public UserTicketService getUserTicketService() {
-        return userTicketService;
-    }
-
-    public void setUserTicketService(UserTicketService userTicketService) {
+    public AuthenticationInterceptor(UserTicketService userTicketService, SecurityHelper securityHelper, SessionHelper sessionHelper, AppProperties appProperties) {
         this.userTicketService = userTicketService;
-    }
-
-    public SecurityHelper getSecurityHelper() {
-        return securityHelper;
-    }
-
-    public void setSecurityHelper(SecurityHelper securityHelper) {
         this.securityHelper = securityHelper;
+        this.sessionHelper = sessionHelper;
+        this.appProperties = appProperties;
     }
-
 }

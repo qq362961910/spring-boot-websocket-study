@@ -1,14 +1,18 @@
 package com.jy.study.spring.websocket.study.config;
 
+import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebsocketConnectionInterceptor;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
+import com.jy.study.spring.websocket.study.helper.SessionHelper;
 import com.jy.study.spring.websocket.study.listener.WebSocketConnectionStateListener;
 import com.jy.study.spring.websocket.study.service.UserTicketService;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@EnableConfigurationProperties({AppProperties.class})
 @Configuration
 public class AppConfig {
 
@@ -21,11 +25,11 @@ public class AppConfig {
         return new WebsocketConnectionInterceptor();
     }
     @Bean
-    public AuthenticationInterceptor authenticationInterceptor(UserTicketService userTicketService, SecurityHelper securityHelper) {
-        AuthenticationInterceptor authenticationInterceptor = new AuthenticationInterceptor();
-        authenticationInterceptor.setUserTicketService(userTicketService);
-        authenticationInterceptor.setSecurityHelper(securityHelper);
-        return authenticationInterceptor;
+    public AuthenticationInterceptor authenticationInterceptor(UserTicketService userTicketService,
+                                                               SecurityHelper securityHelper,
+                                                               SessionHelper sessionHelper,
+                                                               AppProperties appProperties) {
+        return new AuthenticationInterceptor(userTicketService, securityHelper, sessionHelper, appProperties);
     }
 
     @Bean
@@ -34,7 +38,12 @@ public class AppConfig {
     }
 
     @Bean
-    public AppStompErrorHandler appStompErrorHandler() {
-        return new AppStompErrorHandler();
+    public AppStompErrorHandler appStompErrorHandler(SessionHelper sessionHelper, AppProperties appProperties) {
+        return new AppStompErrorHandler(sessionHelper, appProperties);
+    }
+
+    @Bean
+    public SessionHelper sessionHelper() {
+        return new SessionHelper();
     }
 }
