@@ -24,7 +24,6 @@ public class ControllerAspect {
 
     @Before("log()")
     public void doBefore(JoinPoint joinPoint) {
-        System.out.println("hahaha");
         SimpAttributes attributes = SimpAttributesContextHolder.getAttributes();
         if(attributes != null) {
             logger.info("\r\nuser: {}\r\nclass-method: {}\r\nargs: {}",
