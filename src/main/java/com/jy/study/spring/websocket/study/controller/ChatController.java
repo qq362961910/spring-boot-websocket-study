@@ -8,17 +8,18 @@ import org.springframework.stereotype.Controller;
 
 @MessageMapping("chat")
 @Controller
-public class ChantController {
+public class ChatController {
 
     private SecurityHelper securityHelper;
 
-    @SendTo("/broadcast")
+    @MessageMapping("broadcast")
+    @SendTo("/topic/chat/broadcast")
     public String broadcast(String content) {
         User user = securityHelper.getCurrentUser();
         return String.format("%s say: %s", user.getUsername(), content);
     }
 
-    public ChantController(SecurityHelper securityHelper) {
+    public ChatController(SecurityHelper securityHelper) {
         this.securityHelper = securityHelper;
     }
 }

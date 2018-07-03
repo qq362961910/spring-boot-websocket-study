@@ -25,7 +25,6 @@ public class GreetingController {
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")//broadcast to all subscribers "/topic/greetings"
     public Greeting greeting(HelloMessage hello) {
-        securityHelper.getCurrentUser();
         Greeting greeting = new Greeting();
         greeting.setContent("Hello, " + HtmlUtils.htmlEscape(hello.getUsername()) + "!");
         return greeting;

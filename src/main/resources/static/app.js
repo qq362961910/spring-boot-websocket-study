@@ -27,6 +27,9 @@ function connect() {
         stompClient.subscribe('/user/topic/echo', function (result) {
             appendContent(result.body);
         });
+        stompClient.subscribe('/topic/chat/broadcast', function (result) {
+            appendContent(result.body);
+        });
         stompClient.subscribe('/topic/sync/time', function (result) {
             showCurrentTime(result.body);
         });
@@ -48,6 +51,10 @@ function sendName() {
 function echo() {
     stompClient.send("/app/echo", {}, $("#echo-content").val());
 }
+function broadcastMsg(){
+    stompClient.send("/app/chat/broadcast", {}, $("#chat-broadcast").val());
+}
+
 
 function appendContent(message) {
     $("#greetings").append("<tr><td>" + message + "</td></tr>");
@@ -68,4 +75,5 @@ $(function () {
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#name-send" ).click(function() { sendName(); });
     $( "#echo-send" ).click(function() { echo(); });
+    $( "#broad-send" ).click(function() { broadcastMsg(); });
 });
