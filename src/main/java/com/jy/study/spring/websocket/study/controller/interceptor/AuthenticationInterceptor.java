@@ -10,13 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.simp.SimpAttributesContextHolder;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.ExecutorChannelInterceptor;
 
 
-public class AuthenticationInterceptor implements ChannelInterceptor {
+public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorChannelInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
@@ -48,8 +50,28 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
                 }
             }
         }
-        securityHelper.setCurrentUser(user);
         return message;
+    }
+
+    @Override
+    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+
+        SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
+        SimpMessageType simpMessageType = simpMessageHeaderAccessor.getMessageType();
+        if(simpMessageType == SimpMessageType.MESSAGE) {
+            String ticket = (String)simpMessageHeaderAccessor.getSessionAttributes().get("ticket");
+            User user = userTicketService.queryUserByTicket(ticket);
+            if(user == null) {
+                throw new RuntimeException("ohhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+            }
+            securityHelper.setCurrentUser(user);
+        }
+        return message;
+    }
+
+    @Override
+    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
+
     }
 
     public AuthenticationInterceptor(UserTicketService userTicketService, SecurityHelper securityHelper, SessionHelper sessionHelper, AppProperties appProperties) {

@@ -35,8 +35,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setInterceptors(websocketConnectionInterceptor);
     }
 
-
-
     /**
      * 配置客户端入站通道拦截器
      */
@@ -44,6 +42,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(authenticationInterceptor);
     }
+
 
     public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor, WebsocketConnectionInterceptor websocketConnectionInterceptor, AppStompErrorHandler appStompErrorHandler) {
         this.authenticationInterceptor = authenticationInterceptor;
