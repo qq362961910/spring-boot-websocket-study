@@ -6,20 +6,23 @@ import com.jy.study.spring.websocket.study.exception.StompException;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import com.jy.study.spring.websocket.study.helper.SessionHelper;
 import com.jy.study.spring.websocket.study.service.UserTicketService;
+import com.sun.security.auth.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.simp.SimpAttributesContextHolder;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ExecutorChannelInterceptor;
 
+import java.security.Principal;
+
 
 public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorChannelInterceptor {
 
+    private static final String USER_KEY = "user";
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
     private UserTicketService userTicketService;
@@ -31,7 +34,7 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
 //        SimpMessageHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message.getHeaders(), SimpMessageHeaderAccessor.class);
-        String ticket = (String)SimpAttributesContextHolder.getAttributes().getAttribute("ticket");
+        String ticket = (String)simpMessageHeaderAccessor.getSessionAttributes().get("ticket");
         User user = userTicketService.queryUserByTicket(ticket);
         if(user == null) {
             String sessionId = simpMessageHeaderAccessor.getSessionId();
@@ -49,18 +52,20 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
                     logger.info("record session: {}, simpSubscriptionId: {}", sessionId, simpMessageHeaderAccessor.getSubscriptionId());
                 }
             }
+        } else {
+            Principal principal = new UserPrincipal(user.getUsername());
+            simpMessageHeaderAccessor.setUser(principal);
+            setUserToMessageAttribute(simpMessageHeaderAccessor, user);
         }
         return message;
     }
 
     @Override
     public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
-
         SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
         SimpMessageType simpMessageType = simpMessageHeaderAccessor.getMessageType();
         if(simpMessageType == SimpMessageType.MESSAGE) {
-            String ticket = (String)simpMessageHeaderAccessor.getSessionAttributes().get("ticket");
-            User user = userTicketService.queryUserByTicket(ticket);
+            User user = getUserFromMessageAttribute(simpMessageHeaderAccessor);
             if(user == null) {
                 throw new RuntimeException("ohhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
             }
@@ -72,6 +77,14 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
     @Override
     public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
 
+    }
+
+    private void setUserToMessageAttribute(SimpMessageHeaderAccessor simpMessageHeaderAccessor, User user) {
+        simpMessageHeaderAccessor.getSessionAttributes().put(USER_KEY, user);
+    }
+
+    private User getUserFromMessageAttribute(SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
+        return (User)simpMessageHeaderAccessor.getSessionAttributes().get(USER_KEY);
     }
 
     public AuthenticationInterceptor(UserTicketService userTicketService, SecurityHelper securityHelper, SessionHelper sessionHelper, AppProperties appProperties) {
