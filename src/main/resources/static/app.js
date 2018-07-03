@@ -46,7 +46,7 @@ function sendName() {
 }
 
 function echo() {
-    stompClient.send("/app/echo", {}, $("#name").val());
+    stompClient.send("/app/echo", {}, $("#echo-content").val());
 }
 
 function appendContent(message) {
@@ -66,6 +66,6 @@ $(function () {
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
-    $( "#echo" ).click(function() { echo(); });
+    $( "#name-send" ).click(function() { sendName(); });
+    $( "#echo-send" ).click(function() { echo(); });
 });

@@ -20,25 +20,25 @@ public class GreetingController {
     private SecurityHelper securityHelper;
 
     /**
-     * 广播
+     * 系统广播
      * */
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")//broadcast to all subscribers "/topic/greetings"
     public Greeting greeting(HelloMessage hello) {
+        securityHelper.getCurrentUser();
         Greeting greeting = new Greeting();
         greeting.setContent("Hello, " + HtmlUtils.htmlEscape(hello.getUsername()) + "!");
         return greeting;
     }
 
     /**
-     * 点对点
+     * 自言自语
      * */
     @SendToUser("/topic/echo")
     @MessageMapping("/echo")
     public String echo(String message) {
         return message;
     }
-
 
     public GreetingController(SecurityHelper securityHelper) {
         this.securityHelper = securityHelper;

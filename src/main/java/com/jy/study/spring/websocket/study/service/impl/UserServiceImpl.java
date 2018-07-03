@@ -10,9 +10,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User queryUserByUsernameAndPassword(String username, String password) {
         User user = null;
-        if("admin".equals(username) && "admin".equals(password)) {
+        if(username != null && username.equals(password)) {
             user = new User();
             user.setUsername(username);
+            user.setPassword(password);
         }
         return user;
     }
