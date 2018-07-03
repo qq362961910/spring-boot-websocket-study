@@ -1,5 +1,6 @@
 package com.jy.study.spring.websocket.study.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebsocketConnectionInterceptor;
@@ -45,5 +46,10 @@ public class AppConfig {
     @Bean
     public SessionHelper sessionHelper() {
         return new SessionHelper();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }

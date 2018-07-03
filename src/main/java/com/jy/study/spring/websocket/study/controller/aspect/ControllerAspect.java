@@ -1,10 +1,13 @@
 package com.jy.study.spring.websocket.study.controller.aspect;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpAttributes;
+import org.springframework.messaging.simp.SimpAttributesContextHolder;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -22,16 +25,21 @@ public class ControllerAspect {
     @Before("log()")
     public void doBefore(JoinPoint joinPoint) {
         System.out.println("hahaha");
+        SimpAttributes attributes = SimpAttributesContextHolder.getAttributes();
+        if(attributes != null) {
+            logger.info("\r\nuser: {}\r\nclass-method: {}\r\nargs: {}",
+                attributes.getSessionId(),
+                joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName(),
+                joinPoint.getArgs());
+        }
     }
 
     @After("log()")
-    public void doAfter() {
-        System.out.println("hahaha");
-    }
+    public void doAfter() { }
 
     @AfterReturning(pointcut = "log()", returning = "obj")
-    public void afterReturning(Object obj) {
-        System.out.println("hahaha");
+    public void afterReturning(Object obj) throws JsonProcessingException {
+        logger.info("response: {}", objectMapper.writeValueAsString(obj));
     }
 
     public ControllerAspect(ObjectMapper objectMapper) {
