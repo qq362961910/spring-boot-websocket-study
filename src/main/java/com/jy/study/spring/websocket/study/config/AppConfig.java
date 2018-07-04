@@ -8,6 +8,7 @@ import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import com.jy.study.spring.websocket.study.helper.SessionHelper;
 import com.jy.study.spring.websocket.study.listener.WebSocketConnectionStateListener;
+import com.jy.study.spring.websocket.study.service.UserRoleService;
 import com.jy.study.spring.websocket.study.service.UserTicketService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,10 +28,12 @@ public class AppConfig {
     }
     @Bean
     public AuthenticationInterceptor authenticationInterceptor(UserTicketService userTicketService,
+                                                               UserRoleService userRoleService,
                                                                SecurityHelper securityHelper,
                                                                SessionHelper sessionHelper,
-                                                               AppProperties appProperties) {
-        return new AuthenticationInterceptor(userTicketService, securityHelper, sessionHelper, appProperties);
+                                                               AppProperties appProperties
+                                                               ) {
+        return new AuthenticationInterceptor(userTicketService, userRoleService, securityHelper, sessionHelper, appProperties);
     }
 
     @Bean

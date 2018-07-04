@@ -1,4 +1,7 @@
 application:
   websocket:
     session:
-      p2p-simp-subscription-id: /topic/p2p
+      destination-prefix: /topic
+      user-destination-prefix: /user
+      application-destination-prefix: /app
+      p2p: /p2p

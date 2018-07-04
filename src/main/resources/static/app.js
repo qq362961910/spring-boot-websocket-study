@@ -18,13 +18,19 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/p2p', function (result) {
+        stompClient.subscribe('/user/topic/p2p', function (result) {
             alertContent(result.body);
         });
         stompClient.subscribe('/topic/greetings', function (result) {
             appendContent(JSON.parse(result.body).content);
         });
         stompClient.subscribe('/user/topic/echo', function (result) {
+            appendContent(result.body);
+        });
+        stompClient.subscribe('/user/topic/auth/need_login', function (result) {
+            appendContent(result.body);
+        });
+        stompClient.subscribe('/user/topic/auth/need_login', function (result) {
             appendContent(result.body);
         });
         stompClient.subscribe('/topic/chat/broadcast', function (result) {
@@ -54,6 +60,12 @@ function echo() {
 function broadcastMsg(){
     stompClient.send("/app/chat/broadcast", {}, $("#chat-broadcast").val());
 }
+function needAuthMessage() {
+    stompClient.send("/app/auth/need_login", {}, $("#need-auth").val());
+}
+function noNeedAuthMessage() {
+    stompClient.send("/app/auth/no_need_login", {}, $("#no-need-auth").val());
+}
 
 
 function appendContent(message) {
@@ -76,4 +88,6 @@ $(function () {
     $( "#name-send" ).click(function() { sendName(); });
     $( "#echo-send" ).click(function() { echo(); });
     $( "#broad-send" ).click(function() { broadcastMsg(); });
+    $( "#need-auth-btn" ).click(function() { needAuthMessage(); });
+    $( "#no-need-auth-btn" ).click(function() { noNeedAuthMessage(); });
 });

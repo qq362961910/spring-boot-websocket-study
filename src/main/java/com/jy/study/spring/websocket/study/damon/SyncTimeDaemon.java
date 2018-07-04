@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Component
+//@Component
 public class SyncTimeDaemon implements CommandLineRunner, ApplicationListener<ContextClosedEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(SyncTimeDaemon.class);

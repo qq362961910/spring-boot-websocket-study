@@ -2,6 +2,7 @@ package com.jy.study.spring.websocket.study.config;
 
 
 import com.jy.study.spring.websocket.study.handler.AppWebSocketAnnotationMethodMessageHandler;
+import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.annotation.support.SimpAnnotationMethodMessageHandler;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
@@ -9,10 +10,16 @@ import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessa
 @Configuration
 public class AppDelegatingWebSocketMessageBrokerConfiguration extends DelegatingWebSocketMessageBrokerConfiguration {
 
+    private SecurityHelper securityHelper;
+
     @Override
     protected SimpAnnotationMethodMessageHandler createAnnotationMethodMessageHandler() {
         return new AppWebSocketAnnotationMethodMessageHandler(
-            clientInboundChannel(), clientOutboundChannel(), brokerMessagingTemplate());
+            clientInboundChannel(), clientOutboundChannel(), brokerMessagingTemplate(), securityHelper);
 
+    }
+
+    public AppDelegatingWebSocketMessageBrokerConfiguration(SecurityHelper securityHelper) {
+        this.securityHelper = securityHelper;
     }
 }
