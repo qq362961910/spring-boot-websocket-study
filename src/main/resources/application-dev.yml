@@ -1,7 +1,9 @@
 application:
   websocket:
     session:
+      end-point: websocket
+      allowed-origin: "*"
       destination-prefix: /topic
       user-destination-prefix: /user
       application-destination-prefix: /app
-      p2p: /p2p
+      error: /error

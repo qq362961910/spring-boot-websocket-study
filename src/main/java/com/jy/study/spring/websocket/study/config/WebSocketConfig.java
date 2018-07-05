@@ -1,5 +1,6 @@
 package com.jy.study.spring.websocket.study.config;
 
+import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebsocketConnectionInterceptor;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
@@ -12,6 +13,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private AppProperties appProperties;
     private AuthenticationInterceptor authenticationInterceptor;
     private WebsocketConnectionInterceptor websocketConnectionInterceptor;
     private AppStompErrorHandler appStompErrorHandler;
@@ -19,18 +21,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         //激活一个简单的基于内存的消息代理,客户端使用订阅方法时添加的前缀
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker(appProperties.getDestinationPrefix());
         //客户端请求服务端使用@MessageMapping注解方法时添加的前缀
-        config.setApplicationDestinationPrefixes("/app");
+        config.setApplicationDestinationPrefixes(appProperties.getApplicationDestinationPrefix());
         //指定点对点消息前缀
-        config.setUserDestinationPrefix("/user");
+        config.setUserDestinationPrefix(appProperties.getUserDestinationPrefix());
 
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.setErrorHandler(appStompErrorHandler)
-                .addEndpoint("/websocket").setAllowedOrigins("*").withSockJS()
+                .addEndpoint(appProperties.getEndPoint()).setAllowedOrigins(appProperties.getAllowedOrigin()).withSockJS()
                 .setInterceptors(websocketConnectionInterceptor);
     }
 
@@ -43,9 +45,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
 
-    public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor, WebsocketConnectionInterceptor websocketConnectionInterceptor, AppStompErrorHandler appStompErrorHandler) {
+    public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor,
+                           WebsocketConnectionInterceptor websocketConnectionInterceptor,
+                           AppStompErrorHandler appStompErrorHandler,
+                           AppProperties appProperties) {
         this.authenticationInterceptor = authenticationInterceptor;
         this.websocketConnectionInterceptor = websocketConnectionInterceptor;
         this.appStompErrorHandler = appStompErrorHandler;
+        this.appProperties = appProperties;
     }
 }

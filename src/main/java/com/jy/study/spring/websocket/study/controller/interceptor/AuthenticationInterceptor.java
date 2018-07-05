@@ -49,7 +49,7 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
                     logger.warn("session id: {}, without login user, discard [subscribe]: {} ", sessionId, simpMessageHeaderAccessor.getDestination());
                     return null;
                 } else {
-                    if(appProperties.getUserDestinationPrefix().concat(appProperties.getDestinationPrefix()).concat(appProperties.getP2p()).equals(simpMessageHeaderAccessor.getDestination())) {
+                    if(appProperties.getUserDestinationPrefix().concat(appProperties.getDestinationPrefix()).concat(appProperties.getError()).equals(simpMessageHeaderAccessor.getDestination())) {
                         sessionHelper.setSessionP2pSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());
                         logger.info("record session: {}, simpSubscriptionId: {}", sessionId, simpMessageHeaderAccessor.getSubscriptionId());
                     }

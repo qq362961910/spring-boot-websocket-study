@@ -5,13 +5,33 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("application.websocket.session")
 public class AppProperties {
 
+    private String endPoint = "websocket";
+
+    private String allowedOrigin = "*";
+
     private String destinationPrefix = "/topic";
 
     private String userDestinationPrefix = "/user";
 
     private String applicationDestinationPrefix = "/app";
 
-    private String p2p = "/p2p";
+    private String error = "/error";
+
+    public String getEndPoint() {
+        return endPoint;
+    }
+
+    public void setEndPoint(String endPoint) {
+        this.endPoint = endPoint;
+    }
+
+    public String getAllowedOrigin() {
+        return allowedOrigin;
+    }
+
+    public void setAllowedOrigin(String allowedOrigin) {
+        this.allowedOrigin = allowedOrigin;
+    }
 
     public String getDestinationPrefix() {
         return destinationPrefix;
@@ -37,11 +57,11 @@ public class AppProperties {
         this.applicationDestinationPrefix = applicationDestinationPrefix;
     }
 
-    public String getP2p() {
-        return p2p;
+    public String getError() {
+        return error;
     }
 
-    public void setP2p(String p2p) {
-        this.p2p = p2p;
+    public void setError(String error) {
+        this.error = error;
     }
 }
