@@ -14,7 +14,7 @@ public class WebsocketConnectionInterceptor implements HandshakeInterceptor {
     private static final String ticket = "ticket";
 
     @Override
-    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         if(request instanceof ServletServerHttpRequest) {
             Cookie[] cookies = ((ServletServerHttpRequest)request).getServletRequest().getCookies();
             if(cookies != null && cookies.length > 0) {

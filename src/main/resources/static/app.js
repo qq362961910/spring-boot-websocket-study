@@ -18,7 +18,7 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/user/topic/p2p', function (result) {
+        stompClient.subscribe('/user/topic/error', function (result) {
             alertContent(result.body);
         });
         stompClient.subscribe('/topic/greetings', function (result) {
@@ -30,7 +30,7 @@ function connect() {
         stompClient.subscribe('/user/topic/auth/need_login', function (result) {
             appendContent(result.body);
         });
-        stompClient.subscribe('/user/topic/auth/need_login', function (result) {
+        stompClient.subscribe('/user/topic/auth/no_need_login', function (result) {
             appendContent(result.body);
         });
         stompClient.subscribe('/topic/chat/broadcast', function (result) {
