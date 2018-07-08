@@ -1,19 +1,20 @@
 package com.jy.study.spring.websocket.study.handler;
 
 import com.jy.study.spring.websocket.study.anno.AuthorityCheck;
+import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.entity.Role;
 import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.handler.HandlerMethod;
-import org.springframework.messaging.handler.invocation.HandlerMethodReturnValueHandler;
-import org.springframework.messaging.simp.SimpMessageMappingInfo;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.*;
 import org.springframework.web.socket.messaging.WebSocketAnnotationMethodMessageHandler;
 
 
@@ -21,6 +22,8 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorityCheckWebSocketAnnotationMethodMessageHandler.class);
 
+    private AppProperties appProperties;
+    private SimpMessageSendingOperations brokerTemplate;
     private SecurityHelper securityHelper;
 
     @Override
@@ -48,22 +51,36 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
                 }
             }
             if(errorMessage != null) {
-                //禁止未登录用户广播消息
+                SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
                 MethodParameter returnType = handlerMethod.getReturnType();
-                for(HandlerMethodReturnValueHandler handler: this.getReturnValueHandlers()) {
-                    if(handler.supportsReturnType(returnType)) {
-                        try { handler.handleReturnValue(errorMessage, returnType, message); } catch (Exception e) { e.printStackTrace(); }
-                        break;
-                    }
-                }
+                this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getDestinationPrefix().concat(appProperties.getError()), errorMessage, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
                 return;
             }
         }
         super.handleMatch(mapping, handlerMethod, lookupDestination, message);
     }
 
-    public AuthorityCheckWebSocketAnnotationMethodMessageHandler(SubscribableChannel clientInChannel, MessageChannel clientOutChannel, SimpMessageSendingOperations brokerTemplate, SecurityHelper securityHelper) {
+    public AuthorityCheckWebSocketAnnotationMethodMessageHandler(SubscribableChannel clientInChannel,
+                                                                 MessageChannel clientOutChannel,
+                                                                 SimpMessageSendingOperations brokerTemplate,
+                                                                 SecurityHelper securityHelper,
+                                                                 AppProperties appProperties) {
         super(clientInChannel, clientOutChannel, brokerTemplate);
+        this.brokerTemplate = brokerTemplate;
         this.securityHelper = securityHelper;
+        this.appProperties = appProperties;
+    }
+
+    private MessageHeaders createHeaders(@Nullable String sessionId, MethodParameter returnType) {
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        if (getHeaderInitializer() != null) {
+            getHeaderInitializer().initHeaders(headerAccessor);
+        }
+        if (sessionId != null) {
+            headerAccessor.setSessionId(sessionId);
+        }
+        headerAccessor.setHeader(SimpMessagingTemplate.CONVERSION_HINT_HEADER, returnType);
+        headerAccessor.setLeaveMutable(true);
+        return headerAccessor.getMessageHeaders();
     }
 }
