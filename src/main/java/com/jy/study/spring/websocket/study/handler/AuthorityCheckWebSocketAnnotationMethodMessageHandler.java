@@ -17,42 +17,42 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.socket.messaging.WebSocketAnnotationMethodMessageHandler;
 
 
-public class AppWebSocketAnnotationMethodMessageHandler extends WebSocketAnnotationMethodMessageHandler {
+public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSocketAnnotationMethodMessageHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppWebSocketAnnotationMethodMessageHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthorityCheckWebSocketAnnotationMethodMessageHandler.class);
 
     private SecurityHelper securityHelper;
 
     @Override
     protected void handleMatch(SimpMessageMappingInfo mapping, HandlerMethod handlerMethod, String lookupDestination, Message<?> message) {
         AuthorityCheck authorityCheck = handlerMethod.getMethod().getAnnotation(AuthorityCheck.class);
-        String returnValue = null;
+        String errorMessage = null;
         if(authorityCheck != null) {
             //登录检查
             User user = securityHelper.getCurrentUser();
             if(user == null) {
-                returnValue = "no user login";
+                errorMessage = "no user login";
             }
-            if(returnValue == null) {
+            if(errorMessage == null) {
                 //权限检查
                 String[] roles = authorityCheck.roles();
                 if(roles != null && roles.length > 0) {
-                    returnValue = "no authority";
+                    errorMessage = "no authority";
                     for(String roleStr: roles) {
                         for(Role role: user.getRoleList()) {
                             if(role.getName().equals(roleStr)) {
-                                returnValue = null;
+                                errorMessage = null;
                             }
                         }
                     }
                 }
             }
-            if(returnValue != null) {
+            if(errorMessage != null) {
                 //禁止未登录用户广播消息
                 MethodParameter returnType = handlerMethod.getReturnType();
                 for(HandlerMethodReturnValueHandler handler: this.getReturnValueHandlers()) {
                     if(handler.supportsReturnType(returnType)) {
-                        try { handler.handleReturnValue(returnValue, returnType, message); } catch (Exception e) { e.printStackTrace(); }
+                        try { handler.handleReturnValue(errorMessage, returnType, message); } catch (Exception e) { e.printStackTrace(); }
                         break;
                     }
                 }
@@ -62,7 +62,7 @@ public class AppWebSocketAnnotationMethodMessageHandler extends WebSocketAnnotat
         super.handleMatch(mapping, handlerMethod, lookupDestination, message);
     }
 
-    public AppWebSocketAnnotationMethodMessageHandler(SubscribableChannel clientInChannel, MessageChannel clientOutChannel, SimpMessageSendingOperations brokerTemplate, SecurityHelper securityHelper) {
+    public AuthorityCheckWebSocketAnnotationMethodMessageHandler(SubscribableChannel clientInChannel, MessageChannel clientOutChannel, SimpMessageSendingOperations brokerTemplate, SecurityHelper securityHelper) {
         super(clientInChannel, clientOutChannel, brokerTemplate);
         this.securityHelper = securityHelper;
     }

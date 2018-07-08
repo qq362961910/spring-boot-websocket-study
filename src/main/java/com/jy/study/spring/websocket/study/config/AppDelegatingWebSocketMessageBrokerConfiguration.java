@@ -1,7 +1,7 @@
 package com.jy.study.spring.websocket.study.config;
 
 
-import com.jy.study.spring.websocket.study.handler.AppWebSocketAnnotationMethodMessageHandler;
+import com.jy.study.spring.websocket.study.handler.AuthorityCheckWebSocketAnnotationMethodMessageHandler;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.annotation.support.SimpAnnotationMethodMessageHandler;
@@ -14,7 +14,7 @@ public class AppDelegatingWebSocketMessageBrokerConfiguration extends Delegating
 
     @Override
     protected SimpAnnotationMethodMessageHandler createAnnotationMethodMessageHandler() {
-        return new AppWebSocketAnnotationMethodMessageHandler(
+        return new AuthorityCheckWebSocketAnnotationMethodMessageHandler(
             clientInboundChannel(), clientOutboundChannel(), brokerMessagingTemplate(), securityHelper);
 
     }
