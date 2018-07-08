@@ -33,7 +33,7 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
 
     /**
      * 拦截用户订阅消息
-     * 如果用户未登录只允许订阅·错误·topic
+     * 如果用户未登录只允许订阅·p2p·topic
      * 如果用户已登录就把消息放进消息头中
      * */
     @Override
@@ -50,7 +50,7 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
                 if(simpMessageHeaderAccessor.getDestination().startsWith(appProperties.getUserDestinationPrefix())) {
                     logger.info("session: {}, subscribe: {}", sessionId, simpMessageHeaderAccessor.getDestination());
                     if(appProperties.getUserDestinationPrefix().concat(appProperties.getDestinationPrefix()).concat(appProperties.getError()).equals(simpMessageHeaderAccessor.getDestination())) {
-                        sessionHelper.setSessionP2pSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());
+                        sessionHelper.setSessionP2pErrorSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());
                         logger.info("record session: {}, error topic subscriptionId: {}", sessionId, simpMessageHeaderAccessor.getSubscriptionId());
                     }
                 } else {

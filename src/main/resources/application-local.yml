@@ -7,3 +7,4 @@ application:
       user-destination-prefix: /user
       application-destination-prefix: /app
       error: /error
+      ticket-key: ticket

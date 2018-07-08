@@ -8,9 +8,9 @@ public class SessionHelper {
     private final Map<String, SessionConfig> sessionConfigMap = new HashMap<>();
 
 
-    public void setSessionP2pSimpSubscriptionId(String sessionId, String p2pSimpSubscriptionId) {
+    public void setSessionP2pErrorSimpSubscriptionId(String sessionId, String p2pErrorSimpSubscriptionId) {
         SessionConfig sessionConfig = getUserSessionConfig(sessionId, true);
-        sessionConfig.setP2pSimpSubscriptionId(p2pSimpSubscriptionId);
+        sessionConfig.setP2pErrorSimpSubscriptionId(p2pErrorSimpSubscriptionId);
     }
 
     public synchronized SessionConfig getUserSessionConfig(String sessionId, boolean autoCreate) {
@@ -26,14 +26,14 @@ public class SessionHelper {
 
     public static class SessionConfig {
 
-        private String p2pSimpSubscriptionId;
+        private String p2pErrorSimpSubscriptionId;
 
-        public String getP2pSimpSubscriptionId() {
-            return p2pSimpSubscriptionId;
+        public String getP2pErrorSimpSubscriptionId() {
+            return p2pErrorSimpSubscriptionId;
         }
 
-        public void setP2pSimpSubscriptionId(String p2pSimpSubscriptionId) {
-            this.p2pSimpSubscriptionId = p2pSimpSubscriptionId;
+        public void setP2pErrorSimpSubscriptionId(String p2pErrorSimpSubscriptionId) {
+            this.p2pErrorSimpSubscriptionId = p2pErrorSimpSubscriptionId;
         }
     }
 }

@@ -17,6 +17,8 @@ public class AppProperties {
 
     private String error = "/error";
 
+    private String ticketKey = "ticket";
+
     public String getEndPoint() {
         return endPoint;
     }
@@ -63,5 +65,13 @@ public class AppProperties {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getTicketKey() {
+        return ticketKey;
+    }
+
+    public void setTicketKey(String ticketKey) {
+        this.ticketKey = ticketKey;
     }
 }

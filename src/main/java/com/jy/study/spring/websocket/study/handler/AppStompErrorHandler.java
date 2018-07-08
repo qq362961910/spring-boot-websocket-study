@@ -27,7 +27,7 @@ public class AppStompErrorHandler extends StompSubProtocolErrorHandler {
                     StompHeaderAccessor headerAccessor = StompHeaderAccessor.create(StompCommand.MESSAGE);
                     String destination = headerAccessor.getDestination().replaceAll(appProperties.getApplicationDestinationPrefix(), appProperties.getUserDestinationPrefix());
                     headerAccessor.setDestination(destination);
-                    headerAccessor.setSubscriptionId(sessionConfig.getP2pSimpSubscriptionId());
+                    headerAccessor.setSubscriptionId(sessionConfig.getP2pErrorSimpSubscriptionId());
                     headerAccessor.setLeaveMutable(true);
                     return MessageBuilder.createMessage(stompException.getBody().getBytes(), headerAccessor.getMessageHeaders());
                 }
