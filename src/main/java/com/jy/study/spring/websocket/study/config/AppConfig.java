@@ -3,7 +3,7 @@ package com.jy.study.spring.websocket.study.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
-import com.jy.study.spring.websocket.study.controller.interceptor.WebsocketConnectionInterceptor;
+import com.jy.study.spring.websocket.study.controller.interceptor.WebSocketConnectionInterceptor;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import com.jy.study.spring.websocket.study.helper.SessionHelper;
@@ -23,8 +23,8 @@ public class AppConfig {
         return new SecurityHelper();
     }
     @Bean
-    public WebsocketConnectionInterceptor websocketConnectionInterceptor(AppProperties appProperties) {
-        return new WebsocketConnectionInterceptor(appProperties);
+    public WebSocketConnectionInterceptor websocketConnectionInterceptor(AppProperties appProperties) {
+        return new WebSocketConnectionInterceptor(appProperties);
     }
     @Bean
     public AuthenticationInterceptor authenticationInterceptor(UserTicketService userTicketService,

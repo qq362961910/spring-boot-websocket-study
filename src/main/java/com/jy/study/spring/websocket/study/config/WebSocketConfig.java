@@ -2,7 +2,7 @@ package com.jy.study.spring.websocket.study.config;
 
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
-import com.jy.study.spring.websocket.study.controller.interceptor.WebsocketConnectionInterceptor;
+import com.jy.study.spring.websocket.study.controller.interceptor.WebSocketConnectionInterceptor;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -15,7 +15,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private AppProperties appProperties;
     private AuthenticationInterceptor authenticationInterceptor;
-    private WebsocketConnectionInterceptor websocketConnectionInterceptor;
+    private WebSocketConnectionInterceptor websocketConnectionInterceptor;
     private AppStompErrorHandler appStompErrorHandler;
 
     @Override
@@ -32,7 +32,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.setErrorHandler(appStompErrorHandler)
-                .addEndpoint(appProperties.getEndPoint()).setAllowedOrigins(appProperties.getAllowedOrigin()).withSockJS()
+                .addEndpoint(appProperties.getEndPoint())
+                .setAllowedOrigins(appProperties.getAllowedOrigin())
+                .withSockJS()
                 .setInterceptors(websocketConnectionInterceptor);
     }
 
@@ -46,7 +48,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 
     public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor,
-                           WebsocketConnectionInterceptor websocketConnectionInterceptor,
+                           WebSocketConnectionInterceptor websocketConnectionInterceptor,
                            AppStompErrorHandler appStompErrorHandler,
                            AppProperties appProperties) {
         this.authenticationInterceptor = authenticationInterceptor;

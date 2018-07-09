@@ -10,7 +10,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import javax.servlet.http.Cookie;
 import java.util.Map;
 
-public class WebsocketConnectionInterceptor implements HandshakeInterceptor {
+public class WebSocketConnectionInterceptor implements HandshakeInterceptor {
 
     private AppProperties appProperties;
 
@@ -35,7 +35,7 @@ public class WebsocketConnectionInterceptor implements HandshakeInterceptor {
 
     }
 
-    public WebsocketConnectionInterceptor(AppProperties appProperties) {
+    public WebSocketConnectionInterceptor(AppProperties appProperties) {
         this.appProperties = appProperties;
     }
 }

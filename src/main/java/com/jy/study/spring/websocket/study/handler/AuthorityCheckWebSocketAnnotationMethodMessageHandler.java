@@ -29,6 +29,9 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
     @Override
     protected void handleMatch(SimpMessageMappingInfo mapping, HandlerMethod handlerMethod, String lookupDestination, Message<?> message) {
         AuthorityCheck authorityCheck = handlerMethod.getMethod().getAnnotation(AuthorityCheck.class);
+        if(authorityCheck == null) {
+            authorityCheck = handlerMethod.getBeanType().getAnnotation(AuthorityCheck.class);
+        }
         String errorMessage = null;
         if(authorityCheck != null) {
             //登录检查
