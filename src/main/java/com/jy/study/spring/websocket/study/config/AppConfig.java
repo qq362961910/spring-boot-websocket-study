@@ -23,8 +23,8 @@ public class AppConfig {
         return new SecurityHelper();
     }
     @Bean
-    public WebsocketConnectionInterceptor websocketConnectionInterceptor() {
-        return new WebsocketConnectionInterceptor();
+    public WebsocketConnectionInterceptor websocketConnectionInterceptor(AppProperties appProperties) {
+        return new WebsocketConnectionInterceptor(appProperties);
     }
     @Bean
     public AuthenticationInterceptor authenticationInterceptor(UserTicketService userTicketService,

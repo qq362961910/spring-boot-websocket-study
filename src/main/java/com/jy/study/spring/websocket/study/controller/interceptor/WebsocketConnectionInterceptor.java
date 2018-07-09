@@ -34,4 +34,8 @@ public class WebsocketConnectionInterceptor implements HandshakeInterceptor {
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
 
     }
+
+    public WebsocketConnectionInterceptor(AppProperties appProperties) {
+        this.appProperties = appProperties;
+    }
 }
