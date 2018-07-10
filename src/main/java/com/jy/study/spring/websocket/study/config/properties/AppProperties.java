@@ -19,6 +19,10 @@ public class AppProperties {
 
     private String ticketKey = "ticket";
 
+    private long serverHeartBeatFrequency = 10000;
+
+    private long clientHeartBeatFrequency = 0;
+
     public String getEndPoint() {
         return endPoint;
     }
@@ -73,5 +77,21 @@ public class AppProperties {
 
     public void setTicketKey(String ticketKey) {
         this.ticketKey = ticketKey;
+    }
+
+    public long getServerHeartBeatFrequency() {
+        return serverHeartBeatFrequency;
+    }
+
+    public void setServerHeartBeatFrequency(long serverHeartBeatFrequency) {
+        this.serverHeartBeatFrequency = serverHeartBeatFrequency;
+    }
+
+    public long getClientHeartBeatFrequency() {
+        return clientHeartBeatFrequency;
+    }
+
+    public void setClientHeartBeatFrequency(long clientHeartBeatFrequency) {
+        this.clientHeartBeatFrequency = clientHeartBeatFrequency;
     }
 }
