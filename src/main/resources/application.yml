@@ -11,4 +11,11 @@ management:
     health:
       enabled: true
       show-details: always
+    info:
+      enabled: true
+info:
+  app:
+    version: "1.0-SNAPSHOT"
+    description: "spring boot web socket + stomp project"
+    name: "spring web socket study"
 
