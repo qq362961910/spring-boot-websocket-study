@@ -14,7 +14,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
     @Async
     public void sleep10Second() {
         try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace(); }
-        logger.info("sleep 10 seconds exit");
+        logger.info("sleep 5 seconds exit");
     }
 
 }
