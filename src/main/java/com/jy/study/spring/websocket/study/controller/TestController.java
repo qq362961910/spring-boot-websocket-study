@@ -21,6 +21,11 @@ public class TestController {
         return "success";
     }
 
+    @RequestMapping("exception")
+    public String exception() {
+        throw new RuntimeException();
+    }
+
     public TestController(AsyncTaskService asyncTaskService) {
         this.asyncTaskService = asyncTaskService;
     }
