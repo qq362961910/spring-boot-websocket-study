@@ -14,6 +14,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
         logger.info("===> HttpInterceptor#preHandle() runs, uri: {}", request.getRequestURI());
         return true;
     }

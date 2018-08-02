@@ -59,8 +59,6 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
                 }
             }
         } else {
-            Principal principal = new UserPrincipal(user.getUsername());
-            simpMessageHeaderAccessor.setUser(principal);
             setUserToMessageAttribute(simpMessageHeaderAccessor, user);
             user.setRoleList(userRoleService.queryUserRole(user.getUsername()));
         }

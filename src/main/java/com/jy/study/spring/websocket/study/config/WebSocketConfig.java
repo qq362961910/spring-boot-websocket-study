@@ -5,11 +5,18 @@ import com.jy.study.spring.websocket.study.controller.interceptor.Authentication
 import com.jy.study.spring.websocket.study.controller.interceptor.WebSocketConnectionInterceptor;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
+import sun.security.acl.PrincipalImpl;
+
+import java.security.Principal;
+import java.util.Map;
 
 @Configuration
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -38,7 +45,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.setErrorHandler(appStompErrorHandler)
-                .addEndpoint(appProperties.getEndPoint())
+                .addEndpoint(appProperties.getEndPoint()).setHandshakeHandler(new AppEndpointHandShakeHandler())
                 .setAllowedOrigins(appProperties.getAllowedOrigin())
                 .withSockJS()
                 .setInterceptors(websocketConnectionInterceptor);
@@ -61,5 +68,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         this.websocketConnectionInterceptor = websocketConnectionInterceptor;
         this.appStompErrorHandler = appStompErrorHandler;
         this.appProperties = appProperties;
+    }
+}
+
+
+class AppEndpointHandShakeHandler extends DefaultHandshakeHandler {
+
+    @Override
+    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+        return new PrincipalImpl("default");
     }
 }
