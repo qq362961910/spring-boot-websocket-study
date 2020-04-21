@@ -1,7 +1,8 @@
 package com.jy.study.spring.websocket.study.config;
 
 import com.jy.study.spring.websocket.study.controller.interceptor.HttpInterceptor;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

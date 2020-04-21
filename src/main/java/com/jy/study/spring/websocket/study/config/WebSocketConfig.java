@@ -71,13 +71,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         this.appStompErrorHandler = appStompErrorHandler;
         this.appProperties = appProperties;
     }
-}
 
-
-class AppEndpointHandShakeHandler extends DefaultHandshakeHandler {
-
-    @Override
-    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        return new PrincipalImpl("default");
+    private static class AppEndpointHandShakeHandler extends DefaultHandshakeHandler {
+        @Override
+        protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+            return new PrincipalImpl("default");
+        }
     }
 }
+
+
+

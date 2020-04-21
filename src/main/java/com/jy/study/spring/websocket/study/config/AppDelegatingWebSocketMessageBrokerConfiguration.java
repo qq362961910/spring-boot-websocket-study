@@ -26,7 +26,6 @@ public class AppDelegatingWebSocketMessageBrokerConfiguration extends Delegating
     protected SimpAnnotationMethodMessageHandler createAnnotationMethodMessageHandler() {
         return new AuthorityCheckWebSocketAnnotationMethodMessageHandler(
             clientInboundChannel(), clientOutboundChannel(), brokerMessagingTemplate(), securityHelper, appProperties);
-
     }
 
     @Bean
@@ -40,19 +39,21 @@ public class AppDelegatingWebSocketMessageBrokerConfiguration extends Delegating
         this.securityHelper = securityHelper;
         this.appProperties = appProperties;
     }
+
+    private static class AppSubProtocolWebSocketHandler extends SubProtocolWebSocketHandler{
+
+        private static final Logger logger = LoggerFactory.getLogger(AppDelegatingWebSocketMessageBrokerConfiguration.class);
+
+        AppSubProtocolWebSocketHandler(MessageChannel clientInboundChannel, SubscribableChannel clientOutboundChannel) {
+            super(clientInboundChannel, clientOutboundChannel);
+        }
+
+        @Override
+        public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+            logger.info("=================> a new connection establish");
+            super.afterConnectionEstablished(session);
+        }
+    }
 }
 
-class AppSubProtocolWebSocketHandler extends SubProtocolWebSocketHandler{
 
-    private static final Logger logger = LoggerFactory.getLogger(AppDelegatingWebSocketMessageBrokerConfiguration.class);
-
-    AppSubProtocolWebSocketHandler(MessageChannel clientInboundChannel, SubscribableChannel clientOutboundChannel) {
-        super(clientInboundChannel, clientOutboundChannel);
-    }
-
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        logger.info("=================> a new connection establish");
-        super.afterConnectionEstablished(session);
-    }
-}

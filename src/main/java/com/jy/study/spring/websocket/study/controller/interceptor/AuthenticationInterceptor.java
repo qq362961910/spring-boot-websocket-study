@@ -6,7 +6,6 @@ import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import com.jy.study.spring.websocket.study.helper.SessionHelper;
 import com.jy.study.spring.websocket.study.service.UserRoleService;
 import com.jy.study.spring.websocket.study.service.UserTicketService;
-import com.sun.security.auth.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
@@ -16,8 +15,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ExecutorChannelInterceptor;
-
-import java.security.Principal;
 
 
 public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorChannelInterceptor {
