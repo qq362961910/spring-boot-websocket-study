@@ -16,6 +16,9 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ExecutorChannelInterceptor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorChannelInterceptor {
 
@@ -43,13 +46,9 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
             String sessionId = simpMessageHeaderAccessor.getSessionId();
             //订阅消息
             if(SimpMessageType.SUBSCRIBE == simpMessageHeaderAccessor.getMessageType()) {
-                //只允许p2p消息订阅
-                if(simpMessageHeaderAccessor.getDestination().startsWith(appProperties.getUserDestinationPrefix())) {
-                    logger.info("session: {}, subscribe: {}", sessionId, simpMessageHeaderAccessor.getDestination());
-                    if(appProperties.getUserDestinationPrefix().concat(appProperties.getDestinationPrefix()).concat(appProperties.getError()).equals(simpMessageHeaderAccessor.getDestination())) {
-                        sessionHelper.setSessionP2pErrorSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());
-                        logger.info("record session: {}, error topic subscriptionId: {}", sessionId, simpMessageHeaderAccessor.getSubscriptionId());
-                    }
+                if(canSubscribeWithoutLogin(simpMessageHeaderAccessor.getDestination())) {
+                    sessionHelper.setSessionP2pErrorSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());
+                    logger.info("record session: {}, error topic subscriptionId: {}", sessionId, simpMessageHeaderAccessor.getSubscriptionId());
                 } else {
                     logger.warn("session id: {}, without login user, discard [subscribe]: {} ", sessionId, simpMessageHeaderAccessor.getDestination());
                     return null;
@@ -76,11 +75,20 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
     }
 
     private void setUserToMessageAttribute(SimpMessageHeaderAccessor simpMessageHeaderAccessor, User user) {
-        simpMessageHeaderAccessor.getSessionAttributes().put(USER_KEY, user);
+        Map<String, Object> sessionAttributes =  simpMessageHeaderAccessor.getSessionAttributes();
+        if(sessionAttributes == null) {
+            sessionAttributes = new HashMap<>();
+            simpMessageHeaderAccessor.setSessionAttributes(sessionAttributes);
+        }
+        sessionAttributes.put(USER_KEY, user);
     }
 
     private User getUserFromMessageAttribute(SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
-        return (User)simpMessageHeaderAccessor.getSessionAttributes().get(USER_KEY);
+        Map<String, Object> sessionAttributes =  simpMessageHeaderAccessor.getSessionAttributes();
+        if(sessionAttributes == null) {
+            return null;
+        }
+        return (User)sessionAttributes.get(USER_KEY);
     }
 
     public AuthenticationInterceptor(UserTicketService userTicketService,
@@ -93,5 +101,9 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
         this.securityHelper = securityHelper;
         this.sessionHelper = sessionHelper;
         this.appProperties = appProperties;
+    }
+
+    private boolean canSubscribeWithoutLogin(String topic) {
+        return appProperties.getUserError().equals(topic) || appProperties.getApplicationBroadcastTopic().equals(topic);
     }
 }

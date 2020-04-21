@@ -5,8 +5,6 @@ import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.entity.Role;
 import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -19,8 +17,6 @@ import org.springframework.web.socket.messaging.WebSocketAnnotationMethodMessage
 
 
 public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSocketAnnotationMethodMessageHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthorityCheckWebSocketAnnotationMethodMessageHandler.class);
 
     private AppProperties appProperties;
     private SimpMessageSendingOperations brokerTemplate;
@@ -56,7 +52,7 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
             if(errorMessage != null) {
                 SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
                 MethodParameter returnType = handlerMethod.getReturnType();
-                this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getDestinationPrefix().concat(appProperties.getError()), errorMessage, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
+                this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getUserError(), errorMessage, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
                 return;
             }
         }

@@ -15,8 +15,6 @@ public class AppProperties {
 
     private String applicationDestinationPrefix = "/app";
 
-    private String error = "/error";
-
     private String ticketKey = "ticket";
 
     private long serverHeartBeatFrequency = 10000;
@@ -63,12 +61,12 @@ public class AppProperties {
         this.applicationDestinationPrefix = applicationDestinationPrefix;
     }
 
-    public String getError() {
-        return error;
+    public String getUserError() {
+        return userDestinationPrefix + "/error";
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public String getApplicationBroadcastTopic() {
+        return destinationPrefix + "/broadcast";
     }
 
     public String getTicketKey() {

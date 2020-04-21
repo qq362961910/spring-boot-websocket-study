@@ -6,7 +6,6 @@ application:
       destination-prefix: /topic
       user-destination-prefix: /user
       application-destination-prefix: /app
-      error: /error
       ticket-key: ticket
       server-heart-beat-frequency: 5000
       client-heart-beat-frequency: 0
