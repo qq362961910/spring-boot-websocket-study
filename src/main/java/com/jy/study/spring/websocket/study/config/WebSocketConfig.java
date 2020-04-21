@@ -37,7 +37,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.enableSimpleBroker(appProperties.getDestinationPrefix()).setHeartbeatValue(new long[]{appProperties.getServerHeartBeatFrequency(), appProperties.getClientHeartBeatFrequency()}).setTaskScheduler(taskScheduler);
         //客户端请求服务端使用@MessageMapping注解方法时添加的前缀
         config.setApplicationDestinationPrefixes(appProperties.getApplicationDestinationPrefix());
-        //指定点对点消息前缀
+        //指定点对点消息前缀, 每个用户独立拥有一个
+        //当订阅/user/queue/position-updates时会被转换成/queue/position-updatesi9oqdfzo
+        //当发送消息到/user/{username}/queue/position-updates, 会被转换成/queue/position-updatesi9oqdfzo
         config.setUserDestinationPrefix(appProperties.getUserDestinationPrefix());
 
     }
