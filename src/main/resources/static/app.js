@@ -21,7 +21,7 @@ function connect() {
         stompClient.subscribe('/user/topic/error', function (result) {
             alertContent(result.body);
         });
-        stompClient.subscribe('/topic/greetings', function (result) {
+        stompClient.subscribe('/topic/hello', function (result) {
             appendContent(JSON.parse(result.body).content);
         });
         stompClient.subscribe('/user/topic/echo', function (result) {

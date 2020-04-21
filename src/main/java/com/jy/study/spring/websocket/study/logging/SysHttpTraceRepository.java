@@ -16,7 +16,7 @@ public class SysHttpTraceRepository extends InMemoryHttpTraceRepository {
      * */
     @Override
     public void add(HttpTrace trace) {
-        logger.info("http trace: uri: {}, time taken: {}", trace.getRequest().getUri(), trace.getTimeTaken());
+        logger.debug("http trace: uri: {}, time taken: {}", trace.getRequest().getUri(), trace.getTimeTaken());
         super.add(trace);
     }
 }
