@@ -1,7 +1,7 @@
 application:
-  websocket:
-    session:
-        end-point: websocket
+    websocket:
+        session:
+            end-point: websocket
             allowed-origin: "*"
             destination-prefix: /topic
             user-destination-prefix: /user
@@ -10,3 +10,4 @@ application:
             server-heart-beat-frequency: 5000
             client-heart-beat-frequency: 0
             anonymous-topic-set: []
+

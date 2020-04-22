@@ -1,7 +1,7 @@
 application:
-  websocket:
-    session:
-        end-point: websocket
+    websocket:
+        session:
+            end-point: websocket
             allowed-origin: "*"
             destination-prefix: /topic
             user-destination-prefix: /user
@@ -14,3 +14,4 @@ application:
                 "${application.websocket.session.destination-prefix}/sync/time",
                 "${application.websocket.session.user-destination-prefix}${application.websocket.session.destination-prefix}/auth/no_need_login",
             ]
+
