@@ -52,7 +52,7 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
             if(errorMessage != null) {
                 SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
                 MethodParameter returnType = handlerMethod.getReturnType();
-                this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getUserError(), errorMessage, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
+                this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getUserErrorTopic(), errorMessage, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
                 return;
             }
         }

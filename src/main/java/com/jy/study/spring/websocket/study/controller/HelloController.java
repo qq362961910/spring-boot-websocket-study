@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.util.HtmlUtils;
 
 
-@MessageMapping("/hello")
+@MessageMapping("test/hello")
 @Controller
 public class HelloController {
 

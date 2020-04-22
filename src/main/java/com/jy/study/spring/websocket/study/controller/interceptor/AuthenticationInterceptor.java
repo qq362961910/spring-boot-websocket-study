@@ -40,26 +40,44 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
 //        SimpMessageHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message.getHeaders(), SimpMessageHeaderAccessor.class);
-        String ticket = (String)simpMessageHeaderAccessor.getSessionAttributes().get("ticket");
-        User user = userTicketService.queryUserByTicket(ticket);
-        if(user == null) {
+        return doWithMessage(message, simpMessageHeaderAccessor, simpMessageHeaderAccessor.getSessionAttributes());
+    }
+
+    /**
+     * 过滤匿名消息, 设置当前登陆用户到context
+     */
+    private Message<?> doWithMessage(Message<?> message, SimpMessageHeaderAccessor simpMessageHeaderAccessor, Map<String, Object> sessionAttributes) {
+        if(sessionAttributes == null) {
+            return filterNonLoginMessage(message, simpMessageHeaderAccessor);
+        } else {
+            String ticket = (String)sessionAttributes.get("ticket");
+            User user = userTicketService.queryUserByTicket(ticket);
+            if (user == null) {
+                return filterNonLoginMessage(message, simpMessageHeaderAccessor);
+            } else {
+                setUserToMessageAttribute(simpMessageHeaderAccessor, user);
+                user.setRoleList(userRoleService.queryUserRole(user.getUsername()));
+                return message;
+            }
+        }
+    }
+    private Message<?> filterNonLoginMessage(Message<?> message, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
+        if((SimpMessageType.SUBSCRIBE == simpMessageHeaderAccessor.getMessageType())) {
             String sessionId = simpMessageHeaderAccessor.getSessionId();
-            //订阅消息
-            if(SimpMessageType.SUBSCRIBE == simpMessageHeaderAccessor.getMessageType()) {
-                if(canSubscribeWithoutLogin(simpMessageHeaderAccessor.getDestination())) {
-                    sessionHelper.setSessionP2pErrorSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());
-                    logger.info("record session: {}, error topic subscriptionId: {}", sessionId, simpMessageHeaderAccessor.getSubscriptionId());
-                } else {
-                    logger.warn("session id: {}, without login user, discard [subscribe]: {} ", sessionId, simpMessageHeaderAccessor.getDestination());
-                    return null;
-                }
+            //只允许订阅匿名topic
+            if(appProperties.getAnonymousTopicSet().contains(simpMessageHeaderAccessor.getDestination())) {
+                sessionHelper.setSessionP2pErrorSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());
+                logger.info("record session: {}, error topic subscriptionId: {}", sessionId, simpMessageHeaderAccessor.getSubscriptionId());
+                return message;
+            } else {
+                logger.warn("session id: {}, without login user, discard [subscribe]: {} ", sessionId, simpMessageHeaderAccessor.getDestination());
+                return null;
             }
         } else {
-            setUserToMessageAttribute(simpMessageHeaderAccessor, user);
-            user.setRoleList(userRoleService.queryUserRole(user.getUsername()));
+            return message;
         }
-        return message;
     }
+
 
     @Override
     public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
@@ -101,9 +119,5 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
         this.securityHelper = securityHelper;
         this.sessionHelper = sessionHelper;
         this.appProperties = appProperties;
-    }
-
-    private boolean canSubscribeWithoutLogin(String topic) {
-        return appProperties.getUserError().equals(topic) || appProperties.getApplicationBroadcastTopic().equals(topic);
     }
 }

@@ -2,6 +2,10 @@ package com.jy.study.spring.websocket.study.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import javax.annotation.PostConstruct;
+import java.util.HashSet;
+import java.util.Set;
+
 @ConfigurationProperties("application.websocket.session")
 public class AppProperties {
 
@@ -16,6 +20,8 @@ public class AppProperties {
     private String applicationDestinationPrefix = "/app";
 
     private String ticketKey = "ticket";
+
+    private Set<String> anonymousTopicSet = new HashSet<>();
 
     private long serverHeartBeatFrequency = 10000;
 
@@ -61,14 +67,6 @@ public class AppProperties {
         this.applicationDestinationPrefix = applicationDestinationPrefix;
     }
 
-    public String getUserError() {
-        return userDestinationPrefix + "/error";
-    }
-
-    public String getApplicationBroadcastTopic() {
-        return destinationPrefix + "/broadcast";
-    }
-
     public String getTicketKey() {
         return ticketKey;
     }
@@ -91,5 +89,28 @@ public class AppProperties {
 
     public void setClientHeartBeatFrequency(long clientHeartBeatFrequency) {
         this.clientHeartBeatFrequency = clientHeartBeatFrequency;
+    }
+
+    public Set<String> getAnonymousTopicSet() {
+        return anonymousTopicSet;
+    }
+
+    public void setAnonymousTopicSet(Set<String> anonymousTopicSet) {
+        this.anonymousTopicSet = anonymousTopicSet;
+    }
+
+    public String getUserErrorTopic() {
+        return userDestinationPrefix + destinationPrefix + "/error";
+    }
+
+    public String getBroadcastTopic() {
+        return destinationPrefix + "/broadcast";
+    }
+
+    // add ["/user/topic/error", "/topic/broadcast"]
+    @PostConstruct
+    public void afterPropertySet() {
+        anonymousTopicSet.add(getUserErrorTopic());
+        anonymousTopicSet.add(getBroadcastTopic());
     }
 }
