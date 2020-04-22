@@ -19,7 +19,7 @@ public class HelloController {
      * 系统广播
      * */
     @MessageMapping
-    @SendTo("/topic/greetings")//broadcast to all subscribers "/topic/hello"
+    @SendTo("/topic/test/hello")
     public Greeting hello(HelloMessage hello) {
         Greeting greeting = new Greeting();
         greeting.setContent("Hello, " + HtmlUtils.htmlEscape(hello.getUsername()) + "!");

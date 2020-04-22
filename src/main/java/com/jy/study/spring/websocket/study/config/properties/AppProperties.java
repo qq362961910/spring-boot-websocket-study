@@ -1,5 +1,6 @@
 package com.jy.study.spring.websocket.study.config.properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
@@ -13,9 +14,11 @@ public class AppProperties {
 
     private String allowedOrigin = "*";
 
+    private String userDestinationPrefix = "/user";
+
     private String destinationPrefix = "/topic";
 
-    private String userDestinationPrefix = "/user";
+    private String testDestinationPrefix = "/test";
 
     private String applicationDestinationPrefix = "/app";
 
@@ -43,6 +46,14 @@ public class AppProperties {
         this.allowedOrigin = allowedOrigin;
     }
 
+    public String getUserDestinationPrefix() {
+        return userDestinationPrefix;
+    }
+
+    public void setUserDestinationPrefix(String userDestinationPrefix) {
+        this.userDestinationPrefix = userDestinationPrefix;
+    }
+
     public String getDestinationPrefix() {
         return destinationPrefix;
     }
@@ -51,12 +62,12 @@ public class AppProperties {
         this.destinationPrefix = destinationPrefix;
     }
 
-    public String getUserDestinationPrefix() {
-        return userDestinationPrefix;
+    public String getTestDestinationPrefix() {
+        return testDestinationPrefix;
     }
 
-    public void setUserDestinationPrefix(String userDestinationPrefix) {
-        this.userDestinationPrefix = userDestinationPrefix;
+    public void setTestDestinationPrefix(String testDestinationPrefix) {
+        this.testDestinationPrefix = testDestinationPrefix;
     }
 
     public String getApplicationDestinationPrefix() {
@@ -75,6 +86,14 @@ public class AppProperties {
         this.ticketKey = ticketKey;
     }
 
+    public Set<String> getAnonymousTopicSet() {
+        return anonymousTopicSet;
+    }
+
+    public void setAnonymousTopicSet(Set<String> anonymousTopicSet) {
+        this.anonymousTopicSet = anonymousTopicSet;
+    }
+
     public long getServerHeartBeatFrequency() {
         return serverHeartBeatFrequency;
     }
@@ -91,20 +110,28 @@ public class AppProperties {
         this.clientHeartBeatFrequency = clientHeartBeatFrequency;
     }
 
-    public Set<String> getAnonymousTopicSet() {
-        return anonymousTopicSet;
-    }
-
-    public void setAnonymousTopicSet(Set<String> anonymousTopicSet) {
-        this.anonymousTopicSet = anonymousTopicSet;
-    }
-
     public String getUserErrorTopic() {
         return userDestinationPrefix + destinationPrefix + "/error";
     }
 
     public String getBroadcastTopic() {
         return destinationPrefix + "/broadcast";
+    }
+
+    public String getAnonymousBroadcastTopicPattern() {
+        if(StringUtils.isEmpty(testDestinationPrefix)) {
+            return "";
+        } else {
+            return destinationPrefix + testDestinationPrefix + "/**";
+        }
+    }
+
+    public String getAnonymousUserTopicPattern() {
+        if(StringUtils.isEmpty(testDestinationPrefix)) {
+            return "";
+        } else {
+            return userDestinationPrefix + destinationPrefix + testDestinationPrefix + "/**";
+        }
     }
 
     // add ["/user/topic/error", "/topic/broadcast"]

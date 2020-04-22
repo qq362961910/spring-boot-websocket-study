@@ -5,7 +5,13 @@ application:
       allowed-origin: "*"
       destination-prefix: /topic
       user-destination-prefix: /user
+      test-destination-prefix: /test
       application-destination-prefix: /app
       ticket-key: ticket
       server-heart-beat-frequency: 5000
       client-heart-beat-frequency: 0
+      anonymous-topic-set: [
+          "${application.websocket.session.destination-prefix}/sync/time",
+          "${application.websocket.session.user-destination-prefix}${application.websocket.session.destination-prefix}/auth/no_need_login",
+      ]
+

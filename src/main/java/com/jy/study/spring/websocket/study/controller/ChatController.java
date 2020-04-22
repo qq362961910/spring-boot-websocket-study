@@ -7,7 +7,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-@MessageMapping("chat")
+@MessageMapping("test/chat")
 @Controller
 public class ChatController {
 

@@ -21,10 +21,10 @@ function connect() {
         stompClient.subscribe('/user/topic/error', function (result) {
             alertContent(result.body);
         });
-        stompClient.subscribe('/topic/hello', function (result) {
+        stompClient.subscribe('/topic/test/hello', function (result) {
             appendContent(JSON.parse(result.body).content);
         });
-        stompClient.subscribe('/user/topic/echo', function (result) {
+        stompClient.subscribe('/user/topic/test/echo', function (result) {
             appendContent(result.body);
         });
         stompClient.subscribe('/user/topic/auth/need_login', function (result) {
@@ -33,7 +33,7 @@ function connect() {
         stompClient.subscribe('/user/topic/auth/no_need_login', function (result) {
             appendContent(result.body);
         });
-        stompClient.subscribe('/topic/chat/broadcast', function (result) {
+        stompClient.subscribe('/topic/test/chat/broadcast', function (result) {
             appendContent(result.body);
         });
         stompClient.subscribe('/topic/sync/time', function (result) {
@@ -51,11 +51,11 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'username': $("#name").val()}));
+    stompClient.send("/app/test/hello", {}, JSON.stringify({'username': $("#name").val()}));
 }
 
 function echo() {
-    stompClient.send("/app/echo", {}, $("#echo-content").val());
+    stompClient.send("/app/test/echo", {}, $("#echo-content").val());
 }
 function broadcastMsg(){
     stompClient.send("/app/chat/broadcast", {}, $("#chat-broadcast").val());

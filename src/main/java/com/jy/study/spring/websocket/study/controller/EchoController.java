@@ -10,14 +10,14 @@ import org.springframework.stereotype.Controller;
  * @author yj
  * @since 2020-04-21 12:20
  **/
-@MessageMapping("/echo")
+@MessageMapping("test/echo")
 @Controller
 public class EchoController {
 
     /**
      * 自言自语
      * */
-    @SendToUser("/topic/echo")
+    @SendToUser("/topic/test/echo")
     @MessageMapping
     public String echo(String message) {
         return message;

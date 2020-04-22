@@ -1,11 +1,12 @@
 application:
   websocket:
     session:
-      end-point: websocket
-      allowed-origin: "*"
-      destination-prefix: /topic
-      user-destination-prefix: /user
-      application-destination-prefix: /app
-      ticket-key: ticket
-      server-heart-beat-frequency: 5000
-      client-heart-beat-frequency: 0
+        end-point: websocket
+            allowed-origin: "*"
+            destination-prefix: /topic
+            user-destination-prefix: /user
+            application-destination-prefix: /app
+            ticket-key: ticket
+            server-heart-beat-frequency: 5000
+            client-heart-beat-frequency: 0
+            anonymous-topic-set: []
