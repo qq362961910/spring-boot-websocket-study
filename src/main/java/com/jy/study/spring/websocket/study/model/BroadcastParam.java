@@ -1,6 +1,6 @@
 package com.jy.study.spring.websocket.study.model;
 
-public class Greeting {
+public class BroadcastParam {
 
     private String content;
 

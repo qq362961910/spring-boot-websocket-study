@@ -21,9 +21,6 @@ function connect() {
         stompClient.subscribe('/user/topic/error', function (result) {
             alertContent(result.body);
         });
-        stompClient.subscribe('/topic/test/hello', function (result) {
-            appendContent(JSON.parse(result.body).content);
-        });
         stompClient.subscribe('/user/topic/test/echo', function (result) {
             appendContent(result.body);
         });
@@ -33,8 +30,8 @@ function connect() {
         stompClient.subscribe('/user/topic/auth/no_need_login', function (result) {
             appendContent(result.body);
         });
-        stompClient.subscribe('/topic/test/chat', function (result) {
-            appendContent(result.body);
+        stompClient.subscribe('/topic/test/chat/broadcast', function (result) {
+            appendContent(JSON.parse(result.body).msg);
         });
         stompClient.subscribe('/topic/sync/time', function (result) {
             showCurrentTime(result.body);
@@ -49,16 +46,11 @@ function disconnect() {
     setConnected(false);
     console.log("Disconnected");
 }
-
-function sendName() {
-    stompClient.send("/app/test/hello", {}, JSON.stringify({'username': $("#name").val()}));
-}
-
 function echo() {
     stompClient.send("/app/test/echo", {}, $("#echo-content").val());
 }
 function broadcastMsg(){
-    stompClient.send("/app/test/chat/broadcast", {}, $("#chat-broadcast").val());
+    stompClient.send("/app/test/chat/broadcast", {}, JSON.stringify({'content': $("#broadcast").val()}));
 }
 function needAuthMessage() {
     stompClient.send("/app/auth/need_login", {}, $("#need-auth").val());
@@ -85,7 +77,6 @@ $(function () {
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#name-send" ).click(function() { sendName(); });
     $( "#echo-send" ).click(function() { echo(); });
     $( "#broad-send" ).click(function() { broadcastMsg(); });
     $( "#need-auth-btn" ).click(function() { needAuthMessage(); });

@@ -1,7 +1,7 @@
 package com.jy.study.spring.websocket.study.controller;
 
-import com.jy.study.spring.websocket.study.entity.User;
-import com.jy.study.spring.websocket.study.helper.SecurityHelper;
+import com.jy.study.spring.websocket.study.model.BroadcastParam;
+import com.jy.study.spring.websocket.study.model.BroadcastResult;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -10,16 +10,12 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ChatController {
 
-    private SecurityHelper securityHelper;
-
-    @MessageMapping
-    @SendTo("/topic/chat/broadcast")
-    public String broadcast(String content) {
-        User user = securityHelper.getCurrentUser();
-        return String.format("%s say: %s", user.getUsername(), content);
+    @MessageMapping("broadcast")
+    @SendTo("/topic/test/chat/broadcast")
+    public BroadcastResult broadcast(BroadcastParam broadcastParam) {
+        BroadcastResult result = new BroadcastResult();
+        result.setMsg(broadcastParam.getContent());
+        return result;
     }
 
-    public ChatController(SecurityHelper securityHelper) {
-        this.securityHelper = securityHelper;
-    }
 }
