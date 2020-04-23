@@ -33,7 +33,7 @@ function connect() {
         stompClient.subscribe('/user/topic/auth/no_need_login', function (result) {
             appendContent(result.body);
         });
-        stompClient.subscribe('/topic/test/chat/broadcast', function (result) {
+        stompClient.subscribe('/topic/test/chat', function (result) {
             appendContent(result.body);
         });
         stompClient.subscribe('/topic/sync/time', function (result) {
@@ -58,7 +58,7 @@ function echo() {
     stompClient.send("/app/test/echo", {}, $("#echo-content").val());
 }
 function broadcastMsg(){
-    stompClient.send("/app/chat/broadcast", {}, $("#chat-broadcast").val());
+    stompClient.send("/app/test/chat/broadcast", {}, $("#chat-broadcast").val());
 }
 function needAuthMessage() {
     stompClient.send("/app/auth/need_login", {}, $("#need-auth").val());
