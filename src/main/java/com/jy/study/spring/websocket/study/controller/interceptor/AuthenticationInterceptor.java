@@ -4,8 +4,6 @@ import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import com.jy.study.spring.websocket.study.helper.SessionHelper;
-import com.jy.study.spring.websocket.study.service.UserRoleService;
-import com.jy.study.spring.websocket.study.service.UserTicketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
@@ -17,7 +15,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ExecutorChannelInterceptor;
 import org.springframework.util.AntPathMatcher;
 
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -27,8 +24,6 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
     private static final String USER_KEY = "user";
 
-    private UserTicketService userTicketService;
-    private UserRoleService userRoleService;
     private SecurityHelper securityHelper;
     private SessionHelper sessionHelper;
     private AppProperties appProperties;
@@ -52,13 +47,10 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
         if(sessionAttributes == null) {
             return filterNonLoginMessage(message, simpMessageHeaderAccessor);
         } else {
-            String ticket = (String)sessionAttributes.get("ticket");
-            User user = userTicketService.queryUserByTicket(ticket);
+            User user = (User)sessionAttributes.get("user");
             if (user == null) {
                 return filterNonLoginMessage(message, simpMessageHeaderAccessor);
             } else {
-                setUserToMessageAttribute(simpMessageHeaderAccessor, user);
-                user.setRoleList(userRoleService.queryUserRole(user.getUsername()));
                 return message;
             }
         }
@@ -96,15 +88,6 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
         securityHelper.clearCurrentUser();
     }
 
-    private void setUserToMessageAttribute(SimpMessageHeaderAccessor simpMessageHeaderAccessor, User user) {
-        Map<String, Object> sessionAttributes =  simpMessageHeaderAccessor.getSessionAttributes();
-        if(sessionAttributes == null) {
-            sessionAttributes = new HashMap<>();
-            simpMessageHeaderAccessor.setSessionAttributes(sessionAttributes);
-        }
-        sessionAttributes.put(USER_KEY, user);
-    }
-
     private User getUserFromMessageAttribute(SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
         Map<String, Object> sessionAttributes =  simpMessageHeaderAccessor.getSessionAttributes();
         if(sessionAttributes == null) {
@@ -113,13 +96,9 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
         return (User)sessionAttributes.get(USER_KEY);
     }
 
-    public AuthenticationInterceptor(UserTicketService userTicketService,
-                                     UserRoleService userRoleService,
-                                     SecurityHelper securityHelper,
+    public AuthenticationInterceptor(SecurityHelper securityHelper,
                                      SessionHelper sessionHelper,
                                      AppProperties appProperties) {
-        this.userTicketService = userTicketService;
-        this.userRoleService = userRoleService;
         this.securityHelper = securityHelper;
         this.sessionHelper = sessionHelper;
         this.appProperties = appProperties;

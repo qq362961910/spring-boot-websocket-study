@@ -17,7 +17,7 @@ public class EchoController {
     /**
      * 自言自语
      * */
-    @SendToUser("/topic/test/echo")
+    @SendToUser(value = "/topic/test/echo", broadcast = false)
     @MessageMapping
     public String echo(String message) {
         return message;

@@ -1,7 +1,7 @@
 package com.jy.study.spring.websocket.study.config.properties;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;

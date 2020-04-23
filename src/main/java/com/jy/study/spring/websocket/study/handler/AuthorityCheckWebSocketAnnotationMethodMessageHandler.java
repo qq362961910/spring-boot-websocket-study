@@ -2,7 +2,6 @@ package com.jy.study.spring.websocket.study.handler;
 
 import com.jy.study.spring.websocket.study.anno.AuthorityCheck;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
-import com.jy.study.spring.websocket.study.entity.Role;
 import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import org.springframework.core.MethodParameter;
@@ -41,8 +40,8 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
                 if(roles != null && roles.length > 0) {
                     errorMessage = "no authority";
                     for(String roleStr: roles) {
-                        for(Role role: user.getRoleList()) {
-                            if(role.getName().equals(roleStr)) {
+                        for(String role: user.getRoleList()) {
+                            if(role.equals(roleStr)) {
                                 errorMessage = null;
                             }
                         }

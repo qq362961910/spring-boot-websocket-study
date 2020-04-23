@@ -5,10 +5,7 @@ import com.jy.study.spring.websocket.study.service.UserRoleService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserRoleServiceImpl implements UserRoleService, InitializingBean {
@@ -21,6 +18,11 @@ public class UserRoleServiceImpl implements UserRoleService, InitializingBean {
     @Override
     public List<Role> queryUserRole(String username) {
         return userRoleMap.getOrDefault(username, new ArrayList<>(0));
+    }
+
+    @Override
+    public List<String> queryUserRoleName(String username) {
+        return Arrays.asList("admin", "guest");
     }
 
     @Override

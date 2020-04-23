@@ -23,17 +23,15 @@ public class AppConfig {
         return new SecurityHelper();
     }
     @Bean
-    public WebSocketConnectionInterceptor websocketConnectionInterceptor(AppProperties appProperties) {
-        return new WebSocketConnectionInterceptor(appProperties);
+    public WebSocketConnectionInterceptor websocketConnectionInterceptor(UserTicketService userTicketService, UserRoleService userRoleService, AppProperties appProperties) {
+        return new WebSocketConnectionInterceptor(userTicketService, userRoleService, appProperties);
     }
     @Bean
-    public AuthenticationInterceptor authenticationInterceptor(UserTicketService userTicketService,
-                                                               UserRoleService userRoleService,
-                                                               SecurityHelper securityHelper,
+    public AuthenticationInterceptor authenticationInterceptor(SecurityHelper securityHelper,
                                                                SessionHelper sessionHelper,
                                                                AppProperties appProperties
                                                                ) {
-        return new AuthenticationInterceptor(userTicketService, userRoleService, securityHelper, sessionHelper, appProperties);
+        return new AuthenticationInterceptor(securityHelper, sessionHelper, appProperties);
     }
 
     @Bean

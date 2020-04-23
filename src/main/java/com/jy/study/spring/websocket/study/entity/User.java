@@ -1,6 +1,5 @@
 package com.jy.study.spring.websocket.study.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -18,7 +17,7 @@ public class User {
     /**
      * 权限
      * */
-    private List<Role> roleList = new ArrayList<>();
+    private List<String> roleList;
 
 
     public String getUsername() {
@@ -37,13 +36,11 @@ public class User {
         this.password = password;
     }
 
-    public List<Role> getRoleList() {
+    public List<String> getRoleList() {
         return roleList;
     }
 
-    public void setRoleList(List<Role> roleList) {
-        if(roleList != null && roleList.size() > 0) {
-            this.roleList.addAll(roleList);
-        }
+    public void setRoleList(List<String> roleList) {
+        this.roleList = roleList;
     }
 }
