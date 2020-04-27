@@ -1,9 +1,10 @@
 package com.jy.study.spring.websocket.study.controller.interceptor;
 
-import com.jy.study.spring.websocket.study.config.GenericPrincipal;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
+import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.helper.RequestContext;
 import com.jy.study.spring.websocket.study.helper.SessionHelper;
+import com.jy.study.spring.websocket.study.service.UserTicketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
@@ -14,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ExecutorChannelInterceptor;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 
 import java.security.Principal;
 
@@ -25,20 +27,28 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
 
     private SessionHelper sessionHelper;
     private AppProperties appProperties;
+    private UserTicketService userTicketService;
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
-//        SimpMessageHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message.getHeaders(), SimpMessageHeaderAccessor.class);
-        return doWithMessage(message, simpMessageHeaderAccessor);
+    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+        RequestContext.setRequestTimestamp(System.currentTimeMillis());
+        Principal principal = SimpMessageHeaderAccessor.wrap(message).getUser();
+        if(principal != null) {
+            String ticket = principal.getName();
+            if(!StringUtils.isEmpty(ticket)) {
+                User user = userTicketService.queryUserByTicket(ticket);
+                RequestContext.setUser(user);
+            }
+        }
+        return filterMessage(message, RequestContext.getUser());
     }
 
     /**
      * 过滤消息
      * */
-    private Message<?> doWithMessage(Message<?> message, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
-        Principal principal = simpMessageHeaderAccessor.getUser();
-        if (principal == null) {
+    private Message<?> filterMessage(Message<?> message, User user) {
+        SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
+        if (user == null) {
             message = filterNonLoginMessage(message, simpMessageHeaderAccessor);
         }
         if((SimpMessageType.SUBSCRIBE == simpMessageHeaderAccessor.getMessageType())) {
@@ -68,20 +78,14 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
         }
     }
 
-
     @Override
-    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
-        RequestContext.setRequestTimestamp(System.currentTimeMillis());
-        RequestContext.setCurrentUser((GenericPrincipal)SimpMessageHeaderAccessor.wrap(message).getUser());
-        return message;
+    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
+        RequestContext.clearContext();
     }
 
-    @Override
-    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {}
-
-    public AuthenticationInterceptor(SessionHelper sessionHelper,
-                                     AppProperties appProperties) {
+    public AuthenticationInterceptor(SessionHelper sessionHelper, AppProperties appProperties, UserTicketService userTicketService) {
         this.sessionHelper = sessionHelper;
         this.appProperties = appProperties;
+        this.userTicketService = userTicketService;
     }
 }

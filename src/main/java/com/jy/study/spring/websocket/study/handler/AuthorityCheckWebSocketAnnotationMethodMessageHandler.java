@@ -1,8 +1,9 @@
 package com.jy.study.spring.websocket.study.handler;
 
 import com.jy.study.spring.websocket.study.anno.AuthorityCheck;
-import com.jy.study.spring.websocket.study.config.GenericPrincipal;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
+import com.jy.study.spring.websocket.study.entity.User;
+import com.jy.study.spring.websocket.study.helper.RequestContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -13,10 +14,11 @@ import org.springframework.messaging.handler.HandlerMethod;
 import org.springframework.messaging.simp.*;
 import org.springframework.web.socket.messaging.WebSocketAnnotationMethodMessageHandler;
 
-import java.security.Principal;
-
 
 public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSocketAnnotationMethodMessageHandler {
+
+    private static final String NO_USER_LOGIN_MSG = "no user login";
+    private static final String NO_AUTHORITY = "no authority";
 
     private AppProperties appProperties;
     private SimpMessageSendingOperations brokerTemplate;
@@ -28,37 +30,33 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
             authorityCheck = handlerMethod.getBeanType().getAnnotation(AuthorityCheck.class);
         }
         SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
-        String errorMessage = null;
         if(authorityCheck != null) {
             //登录检查
-            Principal principal = simpMessageHeaderAccessor.getUser();
-            if(principal == null) {
-                errorMessage = "no user login";
-            }
-            if(errorMessage == null) {
-                if(principal instanceof GenericPrincipal) {
-                    GenericPrincipal genericPrincipal = (GenericPrincipal)principal;
-                    //权限检查
-                    String[] roles = authorityCheck.roles();
-                    if(roles != null && roles.length > 0) {
-                        errorMessage = "no authority";
-                        out: for(String roleStr: roles) {
-                            for(String role: genericPrincipal.getRoles()) {
-                                if(role.equals(roleStr)) {
-                                    errorMessage = null;
-                                    break out;
-                                }
+            User user = RequestContext.getUser();
+            MethodParameter returnType = handlerMethod.getReturnType();
+            if(user == null) {
+                this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(),
+                    appProperties.getUserErrorTopic(),
+                    NO_USER_LOGIN_MSG,
+                    createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
+                //todo 断开连接
+            } else {
+                //权限检查
+                String[] roles = authorityCheck.roles();
+                if(roles != null && roles.length > 0) {
+                    boolean authorized = false;
+                    out: for(String roleStr: roles) {
+                        for(String role: user.getRoleList()) {
+                            if(role.equals(roleStr)) {
+                                authorized = true;
+                                break out;
                             }
                         }
                     }
-                } else {
-                    errorMessage = "no authority";
+                    if(!authorized) {
+                        this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getUserErrorTopic(), NO_AUTHORITY, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
+                    }
                 }
-            }
-            if(errorMessage != null) {
-                MethodParameter returnType = handlerMethod.getReturnType();
-                this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getUserErrorTopic(), errorMessage, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
-                return;
             }
         }
         super.handleMatch(mapping, handlerMethod, lookupDestination, message);

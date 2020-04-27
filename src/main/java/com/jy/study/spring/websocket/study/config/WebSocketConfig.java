@@ -3,7 +3,6 @@ package com.jy.study.spring.websocket.study.config;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebSocketConnectionInterceptor;
-import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -72,14 +71,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         this.appProperties = appProperties;
     }
 
-    private static class AppEndpointHandShakeHandler extends DefaultHandshakeHandler {
+    private class AppEndpointHandShakeHandler extends DefaultHandshakeHandler {
         @Override
         protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-            if(attributes.get("user") != null && attributes.get("user") instanceof User) {
-                User user = (User)attributes.get("user");
-                return new GenericPrincipal(user.getUsername(), user.getRoleList());
-            }
-            return null;
+            return () -> (String)attributes.get(appProperties.getTicketKey());
         }
     }
 }
