@@ -21,6 +21,10 @@ public class GenericPrincipal implements Principal {
         return username;
     }
 
+    public List<String> getRoles() {
+        return roles;
+    }
+
     @Override
     public boolean implies(Subject subject) {
         return false;

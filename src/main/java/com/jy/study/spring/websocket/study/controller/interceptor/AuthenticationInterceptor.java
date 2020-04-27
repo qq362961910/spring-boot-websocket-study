@@ -1,6 +1,8 @@
 package com.jy.study.spring.websocket.study.controller.interceptor;
 
+import com.jy.study.spring.websocket.study.config.GenericPrincipal;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
+import com.jy.study.spring.websocket.study.helper.RequestContext;
 import com.jy.study.spring.websocket.study.helper.SessionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +26,6 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
     private SessionHelper sessionHelper;
     private AppProperties appProperties;
 
-    /**
-     * 拦截用户订阅消息
-     * 如果用户未登录只允许订阅·p2p·topic
-     * 如果用户已登录就把消息放进消息头中
-     * */
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
@@ -37,8 +34,8 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
     }
 
     /**
-     * 过滤匿名消息, 设置当前登陆用户到context
-     */
+     * 过滤消息
+     * */
     private Message<?> doWithMessage(Message<?> message, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
         Principal principal = simpMessageHeaderAccessor.getUser();
         if (principal == null) {
@@ -74,6 +71,8 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
 
     @Override
     public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+        RequestContext.setRequestTimestamp(System.currentTimeMillis());
+        RequestContext.setCurrentUser((GenericPrincipal)SimpMessageHeaderAccessor.wrap(message).getUser());
         return message;
     }
 

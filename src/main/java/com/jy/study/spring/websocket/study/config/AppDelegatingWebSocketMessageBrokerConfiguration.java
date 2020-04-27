@@ -3,7 +3,6 @@ package com.jy.study.spring.websocket.study.config;
 
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.handler.AuthorityCheckWebSocketAnnotationMethodMessageHandler;
-import com.jy.study.spring.websocket.study.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -19,13 +18,12 @@ import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 @Configuration
 public class AppDelegatingWebSocketMessageBrokerConfiguration extends DelegatingWebSocketMessageBrokerConfiguration {
 
-    private SecurityHelper securityHelper;
     private AppProperties appProperties;
 
     @Override
     protected SimpAnnotationMethodMessageHandler createAnnotationMethodMessageHandler() {
         return new AuthorityCheckWebSocketAnnotationMethodMessageHandler(
-            clientInboundChannel(), clientOutboundChannel(), brokerMessagingTemplate(), securityHelper, appProperties);
+            clientInboundChannel(), clientOutboundChannel(), brokerMessagingTemplate(), appProperties);
     }
 
     @Bean
@@ -34,9 +32,7 @@ public class AppDelegatingWebSocketMessageBrokerConfiguration extends Delegating
         return new AppSubProtocolWebSocketHandler(clientInboundChannel(), clientOutboundChannel());
     }
 
-    public AppDelegatingWebSocketMessageBrokerConfiguration(SecurityHelper securityHelper,
-                                                            AppProperties appProperties) {
-        this.securityHelper = securityHelper;
+    public AppDelegatingWebSocketMessageBrokerConfiguration(AppProperties appProperties) {
         this.appProperties = appProperties;
     }
 

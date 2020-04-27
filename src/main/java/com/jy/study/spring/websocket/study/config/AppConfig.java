@@ -5,7 +5,7 @@ import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebSocketConnectionInterceptor;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
-import com.jy.study.spring.websocket.study.helper.SecurityHelper;
+import com.jy.study.spring.websocket.study.helper.RequestContext;
 import com.jy.study.spring.websocket.study.helper.SessionHelper;
 import com.jy.study.spring.websocket.study.listener.WebSocketConnectionStateListener;
 import com.jy.study.spring.websocket.study.service.UserRoleService;
@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public SecurityHelper securityHelper() {
-        return new SecurityHelper();
+    public RequestContext securityHelper() {
+        return new RequestContext();
     }
     @Bean
     public WebSocketConnectionInterceptor websocketConnectionInterceptor(UserTicketService userTicketService, UserRoleService userRoleService, AppProperties appProperties) {
