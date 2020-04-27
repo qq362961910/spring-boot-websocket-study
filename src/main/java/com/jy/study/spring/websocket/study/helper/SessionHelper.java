@@ -7,7 +7,6 @@ public class SessionHelper {
 
     private final Map<String, SessionConfig> sessionConfigMap = new HashMap<>();
 
-
     public void setSessionP2pErrorSimpSubscriptionId(String sessionId, String p2pErrorSimpSubscriptionId) {
         SessionConfig sessionConfig = getUserSessionConfig(sessionId, true);
         sessionConfig.setP2pErrorSimpSubscriptionId(p2pErrorSimpSubscriptionId);

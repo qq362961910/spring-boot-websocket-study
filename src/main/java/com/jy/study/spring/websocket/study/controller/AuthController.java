@@ -14,7 +14,7 @@ public class AuthController {
     @AuthorityCheck(roles = {"admin"})
     @MessageMapping("need_login")
     public String needLogin() {
-        return String.format("login user: %s", RequestContext.getCurrentUser().getName());
+        return String.format("login user: %s", RequestContext.getUser().getUsername());
     }
 
     @SendToUser("/topic/auth/no_need_login")

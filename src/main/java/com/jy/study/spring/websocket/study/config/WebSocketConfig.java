@@ -3,12 +3,15 @@ package com.jy.study.spring.websocket.study.config;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebSocketConnectionInterceptor;
+import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
+import com.jy.study.spring.websocket.study.service.UserTicketService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.util.StringUtils;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -24,6 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private AuthenticationInterceptor authenticationInterceptor;
     private WebSocketConnectionInterceptor websocketConnectionInterceptor;
     private AppStompErrorHandler appStompErrorHandler;
+    private UserTicketService userTicketService;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -64,17 +68,29 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor,
                            WebSocketConnectionInterceptor websocketConnectionInterceptor,
                            AppStompErrorHandler appStompErrorHandler,
-                           AppProperties appProperties) {
+                           AppProperties appProperties,
+                           UserTicketService userTicketService) {
         this.authenticationInterceptor = authenticationInterceptor;
         this.websocketConnectionInterceptor = websocketConnectionInterceptor;
         this.appStompErrorHandler = appStompErrorHandler;
         this.appProperties = appProperties;
+        this.userTicketService = userTicketService;
     }
 
     private class AppEndpointHandShakeHandler extends DefaultHandshakeHandler {
         @Override
         protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-            return () -> (String)attributes.get(appProperties.getTicketKey());
+            String ticket = (String)attributes.get(appProperties.getTicketKey());
+            if(StringUtils.isEmpty(ticket)) {
+                return null;
+            } else {
+                User user = userTicketService.queryUserByTicket(ticket);
+                if(user == null) {
+                    return null;
+                } else {
+                    return user::getUsername;
+                }
+            }
         }
     }
 }
