@@ -5,6 +5,7 @@ import com.jy.study.spring.websocket.study.controller.response.wrapper.ResultVoW
 import com.jy.study.spring.websocket.study.controller.response.wrapper.UserVoWrapper;
 import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.service.UserLogicErrorCode;
+import com.jy.study.spring.websocket.study.service.UserRoleService;
 import com.jy.study.spring.websocket.study.service.UserService;
 import com.jy.study.spring.websocket.study.service.UserTicketService;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private UserService userService;
+    private UserRoleService userRoleService;
     private UserTicketService userTicketService;
     private UserVoWrapper userVoWrapper;
     private ResultVoWrapper resultVoWrapper;
@@ -37,6 +39,7 @@ public class UserController {
             logger.info("user login failed with username: {}, password: {} at {}", username, password, new Date());
             return resultVoWrapper.buildFail(UserLogicErrorCode.USERNAME_OR_PASSWORD_ERROR);
         }
+        user.setRoleList(userRoleService.queryUserRoleName(user.getUsername()));
         userTicketService.bindTicket(user, response);
         UserVo userVo = userVoWrapper.buildUserVo(user);
         Map<String, Object> data = new HashMap<>();
@@ -46,8 +49,9 @@ public class UserController {
     }
 
 
-    public UserController(UserService userService, UserTicketService userTicketService, UserVoWrapper userVoWrapper, ResultVoWrapper resultVoWrapper) {
+    public UserController(UserService userService, UserRoleService userRoleService, UserTicketService userTicketService, UserVoWrapper userVoWrapper, ResultVoWrapper resultVoWrapper) {
         this.userService = userService;
+        this.userRoleService = userRoleService;
         this.userTicketService = userTicketService;
         this.userVoWrapper = userVoWrapper;
         this.resultVoWrapper = resultVoWrapper;

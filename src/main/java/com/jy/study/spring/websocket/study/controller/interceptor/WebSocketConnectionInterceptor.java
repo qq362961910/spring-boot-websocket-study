@@ -30,7 +30,6 @@ public class WebSocketConnectionInterceptor implements HandshakeInterceptor {
                 MDC.put(TRACE_ID_LOG_NAME, traceId);
             }
         }
-
         if(request instanceof ServletServerHttpRequest) {
             Cookie[] cookies = ((ServletServerHttpRequest)request).getServletRequest().getCookies();
             if(cookies != null && cookies.length > 0) {

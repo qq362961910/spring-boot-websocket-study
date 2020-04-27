@@ -13,9 +13,10 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.security.Principal;
+import java.util.Map;
 
 
 public class AuthenticationInterceptor implements ChannelInterceptor {
@@ -30,19 +31,21 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         RequestContext.setRequestTimestamp(System.currentTimeMillis());
-        Principal principal = SimpMessageHeaderAccessor.wrap(message).getUser();
-        if(principal != null) {
-            String ticket = principal.getName();
+        Map<String, Object> sessionAttributes = SimpMessageHeaderAccessor.wrap(message).getSessionAttributes();
+        if(!CollectionUtils.isEmpty(sessionAttributes)) {
+            String ticket = (String)sessionAttributes.get(appProperties.getTicketKey());
             if(!StringUtils.isEmpty(ticket)) {
-                User user = userTicketService.queryUserByTicket(ticket);
-                RequestContext.setUser(user);
+                if(!StringUtils.isEmpty(ticket)) {
+                    User user = userTicketService.queryUserByTicket(ticket);
+                    RequestContext.setUser(user);
+                }
             }
         }
         return filterMessage(message, RequestContext.getUser());
     }
 
     @Override
-    public void postSend(Message<?> message, MessageChannel channel, boolean sent) {
+    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
         RequestContext.clearContext();
     }
 
