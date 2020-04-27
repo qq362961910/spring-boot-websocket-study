@@ -40,6 +40,7 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
                     NO_USER_LOGIN_MSG,
                     createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
                 //todo 断开连接
+                return;
             } else {
                 //权限检查
                 String[] roles = authorityCheck.roles();
@@ -55,6 +56,7 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
                     }
                     if(!authorized) {
                         this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getUserErrorTopic(), NO_AUTHORITY, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
+                        return;
                     }
                 }
             }

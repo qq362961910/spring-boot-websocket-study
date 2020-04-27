@@ -44,7 +44,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //当订阅/user/queue/position-updates时会被转换成/queue/position-updatesi9oqdfzo
         //当发送消息到/user/{username}/queue/position-updates, 会被转换成/queue/position-updatesi9oqdfzo
         config.setUserDestinationPrefix(appProperties.getUserDestinationPrefix());
-
     }
 
     @Override

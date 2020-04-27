@@ -9,18 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.ExecutorChannelInterceptor;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 
 import java.security.Principal;
 
 
-public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorChannelInterceptor {
+public class AuthenticationInterceptor implements ChannelInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
@@ -30,7 +28,7 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
     private UserTicketService userTicketService;
 
     @Override
-    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
         RequestContext.setRequestTimestamp(System.currentTimeMillis());
         Principal principal = SimpMessageHeaderAccessor.wrap(message).getUser();
         if(principal != null) {
@@ -41,6 +39,11 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
             }
         }
         return filterMessage(message, RequestContext.getUser());
+    }
+
+    @Override
+    public void postSend(Message<?> message, MessageChannel channel, boolean sent) {
+        RequestContext.clearContext();
     }
 
     /**
@@ -76,11 +79,6 @@ public class AuthenticationInterceptor implements ChannelInterceptor, ExecutorCh
         } else {
             return message;
         }
-    }
-
-    @Override
-    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
-        RequestContext.clearContext();
     }
 
     public AuthenticationInterceptor(SessionHelper sessionHelper, AppProperties appProperties, UserTicketService userTicketService) {
