@@ -68,7 +68,7 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
         if((SimpMessageType.SUBSCRIBE == simpMessageHeaderAccessor.getMessageType())) {
             String sessionId = simpMessageHeaderAccessor.getSessionId();
             //只允许订阅匿名topic
-            if(appProperties.getAnonymousTopicSet().contains(simpMessageHeaderAccessor.getDestination())
+            if(!StringUtils.isEmpty(simpMessageHeaderAccessor.getDestination()) && appProperties.getAnonymousTopicSet().contains(simpMessageHeaderAccessor.getDestination())
                 || ANT_PATH_MATCHER.match(appProperties.getAnonymousBroadcastTopicPattern(), simpMessageHeaderAccessor.getDestination())
                 || ANT_PATH_MATCHER.match(appProperties.getAnonymousUserTopicPattern(), simpMessageHeaderAccessor.getDestination())) {
                 sessionHelper.setSessionP2pErrorSimpSubscriptionId(sessionId, simpMessageHeaderAccessor.getSubscriptionId());

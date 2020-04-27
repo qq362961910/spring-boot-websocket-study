@@ -12,6 +12,7 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.handler.HandlerMethod;
 import org.springframework.messaging.simp.*;
+import org.springframework.util.StringUtils;
 import org.springframework.web.socket.messaging.WebSocketAnnotationMethodMessageHandler;
 
 
@@ -35,10 +36,12 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
             User user = RequestContext.getUser();
             MethodParameter returnType = handlerMethod.getReturnType();
             if(user == null) {
-                this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(),
-                    appProperties.getUserErrorTopic(),
-                    NO_USER_LOGIN_MSG,
-                    createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
+                if(!StringUtils.isEmpty(simpMessageHeaderAccessor.getSessionId())) {
+                    this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(),
+                        appProperties.getUserErrorTopic().replace(appProperties.getUserDestinationPrefix(), ""),
+                        NO_USER_LOGIN_MSG,
+                        createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
+                }
                 //todo 断开连接
                 return;
             } else {
@@ -55,7 +58,12 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
                         }
                     }
                     if(!authorized) {
-                        this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(), appProperties.getUserErrorTopic(), NO_AUTHORITY, createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
+                        if(!StringUtils.isEmpty(simpMessageHeaderAccessor.getSessionId())) {
+                            this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(),
+                                appProperties.getUserErrorTopic().replace(appProperties.getUserDestinationPrefix(), ""),
+                                NO_AUTHORITY,
+                                createHeaders(simpMessageHeaderAccessor.getSessionId(),returnType));
+                        }
                         return;
                     }
                 }

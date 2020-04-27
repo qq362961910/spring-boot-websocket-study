@@ -37,7 +37,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //心跳第一个参数表示服务端向客户端写出心跳的频率(0表示服务器不发送心跳)
         //心跳第二个参数表示客户端多久应该向服务器发送心跳, (0表示客户端不应该发送心跳)
         //服务端取两个心跳值较小的作为发心跳的频率，在stomp.js实现中使用两个值中较大者作为发送心跳的频率(在stomp1.1的协议中client默认值为10秒(10000),所以当服务器响应的值大于0或者小于10时不生效,只能修改客户端实现)
-        config.enableSimpleBroker(appProperties.getDestinationPrefix()).setHeartbeatValue(new long[]{appProperties.getServerHeartBeatFrequency(), appProperties.getClientHeartBeatFrequency()}).setTaskScheduler(taskScheduler);
+//        config.enableSimpleBroker(appProperties.getDestinationPrefix()).setHeartbeatValue(new long[]{appProperties.getServerHeartBeatFrequency(), appProperties.getClientHeartBeatFrequency()}).setTaskScheduler(taskScheduler);
+        config.enableSimpleBroker(appProperties.getDestinationPrefix());
         //客户端请求服务端使用@MessageMapping注解方法时添加的前缀
         config.setApplicationDestinationPrefixes(appProperties.getApplicationDestinationPrefix());
         //指定点对点消息前缀, 每个用户独立拥有一个
