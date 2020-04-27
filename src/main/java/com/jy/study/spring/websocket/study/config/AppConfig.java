@@ -27,11 +27,10 @@ public class AppConfig {
         return new WebSocketConnectionInterceptor(userTicketService, userRoleService, appProperties);
     }
     @Bean
-    public AuthenticationInterceptor authenticationInterceptor(SecurityHelper securityHelper,
-                                                               SessionHelper sessionHelper,
+    public AuthenticationInterceptor authenticationInterceptor(SessionHelper sessionHelper,
                                                                AppProperties appProperties
                                                                ) {
-        return new AuthenticationInterceptor(securityHelper, sessionHelper, appProperties);
+        return new AuthenticationInterceptor(sessionHelper, appProperties);
     }
 
     @Bean
