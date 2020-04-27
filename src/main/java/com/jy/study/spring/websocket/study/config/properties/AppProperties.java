@@ -110,20 +110,12 @@ public class AppProperties {
         this.clientHeartBeatFrequency = clientHeartBeatFrequency;
     }
 
-    public String getUserErrorTopic() {
-        return userDestinationPrefix + destinationPrefix + "/error";
+    public String getUserTopic() {
+        return userDestinationPrefix + destinationPrefix + "/p2p";
     }
 
     public String getBroadcastTopic() {
         return destinationPrefix + "/broadcast";
-    }
-
-    public String getAnonymousBroadcastTopicPattern() {
-        if(StringUtils.isEmpty(testDestinationPrefix)) {
-            return "";
-        } else {
-            return destinationPrefix + testDestinationPrefix + "/**";
-        }
     }
 
     public String getAnonymousUserTopicPattern() {
@@ -134,10 +126,18 @@ public class AppProperties {
         }
     }
 
-    // add ["/user/topic/error", "/topic/broadcast"]
+    public String getAnonymousBroadcastTopicPattern() {
+        if(StringUtils.isEmpty(testDestinationPrefix)) {
+            return "";
+        } else {
+            return destinationPrefix + testDestinationPrefix + "/**";
+        }
+    }
+
+    // add ["/user/topic/p2p", "/topic/broadcast"]
     @PostConstruct
     public void afterPropertySet() {
-        anonymousTopicSet.add(getUserErrorTopic());
+        anonymousTopicSet.add(getUserTopic());
         anonymousTopicSet.add(getBroadcastTopic());
     }
 }

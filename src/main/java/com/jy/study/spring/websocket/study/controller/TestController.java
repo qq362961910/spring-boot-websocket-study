@@ -15,7 +15,7 @@ public class TestController {
         return "hello";
     }
 
-    @RequestMapping("asyn_task")
+    @RequestMapping("async_task")
     public String asyncTask() {
         asyncTaskService.sleep10Second();
         return "success";

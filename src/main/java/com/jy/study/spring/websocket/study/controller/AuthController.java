@@ -10,14 +10,14 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class AuthController {
 
-    @SendToUser("/topic/auth/need_login")
+    @SendToUser("/topic/p2p")
     @AuthorityCheck(roles = {"admin"})
     @MessageMapping("need_login")
     public String needLogin() {
         return String.format("login user: %s", RequestContext.getUser().getUsername());
     }
 
-    @SendToUser("/topic/auth/no_need_login")
+    @SendToUser("/topic/p2p")
     @MessageMapping("no_need_login")
     public String noNeedLogin() {
         return "no need login";

@@ -38,7 +38,7 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
             if(user == null) {
                 if(!StringUtils.isEmpty(simpMessageHeaderAccessor.getSessionId())) {
                     this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(),
-                        appProperties.getUserErrorTopic().replace(appProperties.getUserDestinationPrefix(), ""),
+                        appProperties.getUserTopic().replace(appProperties.getUserDestinationPrefix(), ""),
                         NO_USER_LOGIN_MSG,
                         createHeaders(simpMessageHeaderAccessor.getSessionId(), returnType));
                 }
@@ -60,7 +60,7 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
                     if(!authorized) {
                         if(!StringUtils.isEmpty(simpMessageHeaderAccessor.getSessionId())) {
                             this.brokerTemplate.convertAndSendToUser(simpMessageHeaderAccessor.getSessionId(),
-                                appProperties.getUserErrorTopic().replace(appProperties.getUserDestinationPrefix(), ""),
+                                appProperties.getUserTopic().replace(appProperties.getUserDestinationPrefix(), ""),
                                 NO_AUTHORITY,
                                 createHeaders(simpMessageHeaderAccessor.getSessionId(),returnType));
                         }

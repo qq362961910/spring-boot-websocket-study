@@ -18,25 +18,21 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/user/topic/error', function (result) {
-            alertContent(result.body);
+        stompClient.subscribe('/user/topic/p2p', function (result) {
+            dealP2pMsg(result.body);
         });
-        stompClient.subscribe('/user/topic/test/echo', function (result) {
-            appendContent(result.body);
-        });
-        stompClient.subscribe('/user/topic/auth/need_login', function (result) {
-            appendContent(result.body);
-        });
-        stompClient.subscribe('/user/topic/auth/no_need_login', function (result) {
-            appendContent(result.body);
-        });
-        stompClient.subscribe('/topic/test/chat/broadcast', function (result) {
-            appendContent(JSON.parse(result.body).msg);
-        });
-        stompClient.subscribe('/topic/sync/time', function (result) {
-            showCurrentTime(result.body);
+        stompClient.subscribe('/topic/broadcast', function (result) {
+            dealBroadcastMsg(result.body);
         });
     });
+}
+
+function dealP2pMsg(msg) {
+    appendContent(msg);
+}
+
+function dealBroadcastMsg(msg) {
+    appendContent(msg);
 }
 
 function disconnect() {
@@ -47,10 +43,10 @@ function disconnect() {
     console.log("Disconnected");
 }
 function echo() {
-    stompClient.send("/app/test/echo", {}, $("#echo-content").val());
+    stompClient.send("/app/echo", {}, $("#echo-content").val());
 }
 function broadcastMsg(){
-    stompClient.send("/app/test/chat/broadcast", {}, JSON.stringify({'content': $("#broadcast").val()}));
+    stompClient.send("/app/chat/broadcast", {}, JSON.stringify({'content': $("#broadcast").val()}));
 }
 function needAuthMessage() {
     stompClient.send("/app/auth/need_login", {}, $("#need-auth").val());

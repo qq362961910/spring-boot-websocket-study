@@ -5,6 +5,7 @@ application:
             allowed-origin: "*"
             destination-prefix: /topic
             user-destination-prefix: /user
+            test-destination-prefix: /test
             application-destination-prefix: /app
             ticket-key: ticket
             server-heart-beat-frequency: 5000

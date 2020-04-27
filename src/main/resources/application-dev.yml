@@ -12,6 +12,5 @@ application:
             client-heart-beat-frequency: 0
             anonymous-topic-set: [
                 "${application.websocket.session.destination-prefix}/sync/time",
-                "${application.websocket.session.user-destination-prefix}${application.websocket.session.destination-prefix}/auth/no_need_login",
             ]
 
