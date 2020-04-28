@@ -2,8 +2,7 @@ package com.jy.study.spring.websocket.study.handler;
 
 import com.jy.study.spring.websocket.study.anno.AuthorityCheck;
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
-import com.jy.study.spring.websocket.study.entity.User;
-import com.jy.study.spring.websocket.study.helper.RequestContext;
+import com.jy.study.spring.websocket.study.service.UserRoleService;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -12,8 +11,12 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.handler.HandlerMethod;
 import org.springframework.messaging.simp.*;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.messaging.WebSocketAnnotationMethodMessageHandler;
+
+import java.security.Principal;
+import java.util.List;
 
 
 public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSocketAnnotationMethodMessageHandler {
@@ -23,6 +26,7 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
 
     private AppProperties appProperties;
     private SimpMessageSendingOperations brokerTemplate;
+    private UserRoleService userRoleService;
 
     @Override
     protected void handleMatch(SimpMessageMappingInfo mapping, HandlerMethod handlerMethod, String lookupDestination, Message<?> message) {
@@ -33,7 +37,7 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
         SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
         if(authorityCheck != null) {
             //登录检查
-            User user = RequestContext.getUser();
+            Principal user = simpMessageHeaderAccessor.getUser();
             MethodParameter returnType = handlerMethod.getReturnType();
             if(user == null) {
                 if(!StringUtils.isEmpty(simpMessageHeaderAccessor.getSessionId())) {
@@ -48,11 +52,14 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
                 String[] roles = authorityCheck.roles();
                 if(roles != null && roles.length > 0) {
                     boolean authorized = false;
-                    out: for(String roleStr: roles) {
-                        for(String role: user.getRoleList()) {
-                            if(role.equals(roleStr)) {
-                                authorized = true;
-                                break out;
+                    List<String> roleList = userRoleService.queryUserRoleName(user.getName());
+                    if(!CollectionUtils.isEmpty(roleList)) {
+                        out: for(String roleStr: roles) {
+                            for(String role: roleList) {
+                                if(role.equals(roleStr)) {
+                                    authorized = true;
+                                    break out;
+                                }
                             }
                         }
                     }
@@ -71,13 +78,11 @@ public class AuthorityCheckWebSocketAnnotationMethodMessageHandler extends WebSo
         super.handleMatch(mapping, handlerMethod, lookupDestination, message);
     }
 
-    public AuthorityCheckWebSocketAnnotationMethodMessageHandler(SubscribableChannel clientInChannel,
-                                                                 MessageChannel clientOutChannel,
-                                                                 SimpMessageSendingOperations brokerTemplate,
-                                                                 AppProperties appProperties) {
+    public AuthorityCheckWebSocketAnnotationMethodMessageHandler(SubscribableChannel clientInChannel, MessageChannel clientOutChannel, SimpMessageSendingOperations brokerTemplate, AppProperties appProperties, UserRoleService userRoleService) {
         super(clientInChannel, clientOutChannel, brokerTemplate);
-        this.brokerTemplate = brokerTemplate;
         this.appProperties = appProperties;
+        this.brokerTemplate = brokerTemplate;
+        this.userRoleService = userRoleService;
     }
 
     private MessageHeaders createHeaders(@Nullable String sessionId, MethodParameter returnType) {

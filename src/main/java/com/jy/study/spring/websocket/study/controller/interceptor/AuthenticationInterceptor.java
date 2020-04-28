@@ -19,6 +19,9 @@ import org.springframework.util.StringUtils;
 import java.util.Map;
 
 
+/**
+ * 该类实现有问题，业务线程和当前类不在一个线程执行
+ */
 public class AuthenticationInterceptor implements ChannelInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
@@ -41,20 +44,19 @@ public class AuthenticationInterceptor implements ChannelInterceptor {
                 }
             }
         }
-        return filterMessage(message, RequestContext.getUser());
+        ;
+        return filterMessage(message);
     }
 
     @Override
-    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
-        RequestContext.clearContext();
-    }
+    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {}
 
     /**
      * 过滤消息
      * */
-    private Message<?> filterMessage(Message<?> message, User user) {
+    private Message<?> filterMessage(Message<?> message) {
         SimpMessageHeaderAccessor simpMessageHeaderAccessor = SimpMessageHeaderAccessor.wrap(message);
-        if (user == null) {
+        if (simpMessageHeaderAccessor.getUser() == null) {
             message = filterNonLoginMessage(message, simpMessageHeaderAccessor);
         }
         if((SimpMessageType.SUBSCRIBE == simpMessageHeaderAccessor.getMessageType())) {

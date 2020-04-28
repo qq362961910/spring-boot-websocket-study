@@ -3,6 +3,7 @@ package com.jy.study.spring.websocket.study.config;
 
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
 import com.jy.study.spring.websocket.study.handler.AuthorityCheckWebSocketAnnotationMethodMessageHandler;
+import com.jy.study.spring.websocket.study.service.UserRoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -19,11 +20,12 @@ import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 public class AppDelegatingWebSocketMessageBrokerConfiguration extends DelegatingWebSocketMessageBrokerConfiguration {
 
     private AppProperties appProperties;
+    private UserRoleService userRoleService;
 
     @Override
     protected SimpAnnotationMethodMessageHandler createAnnotationMethodMessageHandler() {
         return new AuthorityCheckWebSocketAnnotationMethodMessageHandler(
-            clientInboundChannel(), clientOutboundChannel(), brokerMessagingTemplate(), appProperties);
+            clientInboundChannel(), clientOutboundChannel(), brokerMessagingTemplate(), appProperties, userRoleService);
     }
 
     @Bean
@@ -32,8 +34,9 @@ public class AppDelegatingWebSocketMessageBrokerConfiguration extends Delegating
         return new AppSubProtocolWebSocketHandler(clientInboundChannel(), clientOutboundChannel());
     }
 
-    public AppDelegatingWebSocketMessageBrokerConfiguration(AppProperties appProperties) {
+    public AppDelegatingWebSocketMessageBrokerConfiguration(AppProperties appProperties, UserRoleService userRoleService) {
         this.appProperties = appProperties;
+        this.userRoleService = userRoleService;
     }
 
     private static class AppSubProtocolWebSocketHandler extends SubProtocolWebSocketHandler{

@@ -1,7 +1,6 @@
 package com.jy.study.spring.websocket.study.config;
 
 import com.jy.study.spring.websocket.study.config.properties.AppProperties;
-import com.jy.study.spring.websocket.study.controller.interceptor.AuthenticationInterceptor;
 import com.jy.study.spring.websocket.study.controller.interceptor.WebSocketConnectionInterceptor;
 import com.jy.study.spring.websocket.study.entity.User;
 import com.jy.study.spring.websocket.study.handler.AppStompErrorHandler;
@@ -24,7 +23,6 @@ import java.util.Map;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private AppProperties appProperties;
-    private AuthenticationInterceptor authenticationInterceptor;
     private WebSocketConnectionInterceptor websocketConnectionInterceptor;
     private AppStompErrorHandler appStompErrorHandler;
     private UserTicketService userTicketService;
@@ -60,17 +58,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      * 配置客户端入站通道拦截器
      */
     @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(authenticationInterceptor);
-    }
+    public void configureClientInboundChannel(ChannelRegistration registration) {}
 
 
-    public WebSocketConfig(AuthenticationInterceptor authenticationInterceptor,
-                           WebSocketConnectionInterceptor websocketConnectionInterceptor,
+    public WebSocketConfig(WebSocketConnectionInterceptor websocketConnectionInterceptor,
                            AppStompErrorHandler appStompErrorHandler,
                            AppProperties appProperties,
                            UserTicketService userTicketService) {
-        this.authenticationInterceptor = authenticationInterceptor;
         this.websocketConnectionInterceptor = websocketConnectionInterceptor;
         this.appStompErrorHandler = appStompErrorHandler;
         this.appProperties = appProperties;
