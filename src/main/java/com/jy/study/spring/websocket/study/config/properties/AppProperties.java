@@ -22,6 +22,8 @@ public class AppProperties {
 
     private String applicationDestinationPrefix = "/app";
 
+    private Integer relayPort = 7000;
+
     private String ticketKey = "ticket";
 
     private Set<String> anonymousTopicSet = new HashSet<>();
@@ -76,6 +78,14 @@ public class AppProperties {
 
     public void setApplicationDestinationPrefix(String applicationDestinationPrefix) {
         this.applicationDestinationPrefix = applicationDestinationPrefix;
+    }
+
+    public Integer getRelayPort() {
+        return relayPort;
+    }
+
+    public void setRelayPort(Integer relayPort) {
+        this.relayPort = relayPort;
     }
 
     public String getTicketKey() {
