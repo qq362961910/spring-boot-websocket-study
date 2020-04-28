@@ -36,12 +36,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //心跳第二个参数表示客户端多久应该向服务器发送心跳, (0表示客户端不应该发送心跳)
         //服务端取两个心跳值较小的作为发心跳的频率，在stomp.js实现中使用两个值中较大者作为发送心跳的频率(在stomp1.1的协议中client默认值为10秒(10000),所以当服务器响应的值大于0或者小于10时不生效,只能修改客户端实现)
 //        config.enableSimpleBroker(appProperties.getDestinationPrefix()).setHeartbeatValue(new long[]{appProperties.getServerHeartBeatFrequency(), appProperties.getClientHeartBeatFrequency()}).setTaskScheduler(taskScheduler);
-        config.enableSimpleBroker(appProperties.getDestinationPrefix());
-//        config.enableStompBrokerRelay(appProperties.getDestinationPrefix())
-//            .setUserDestinationBroadcast("/topic/unresolved-user")
-//            .setUserRegistryBroadcast("/topic/user-registry")
-//            .setRelayPort(9876)
-//            .setRelayHost("127.0.0.1");
+//        config.enableSimpleBroker(appProperties.getDestinationPrefix());
+        config.enableStompBrokerRelay(appProperties.getDestinationPrefix())
+            .setUserDestinationBroadcast("/topic/unresolved-user")
+            .setUserRegistryBroadcast("/topic/user-registry")
+            .setRelayHost("127.0.0.1")
+            .setRelayPort(61613)
+        .setSystemLogin("system1")
+        .setSystemPasscode("manager")
+        .setClientLogin("system1")
+        .setClientPasscode("manager");
+
 
         //客户端请求服务端使用@MessageMapping注解方法时添加的前缀
         config.setApplicationDestinationPrefixes(appProperties.getApplicationDestinationPrefix());
