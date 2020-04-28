@@ -22,9 +22,6 @@ public class WebSocketConnectionInterceptor implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        if(true) {
-            return false;
-        }
         if(request instanceof HttpServletRequest) {
             String traceId = ((HttpServletRequest)request).getHeader(TRACE_ID_HEADER_NAME);
             if(StringUtils.isEmpty(traceId)) {

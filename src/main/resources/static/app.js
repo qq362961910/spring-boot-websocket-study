@@ -12,9 +12,14 @@ function setConnected(connected) {
     $("#greetings").html("");
 }
 
+//参考地址: https://github.com/sockjs/sockjs-client
 function connect() {
-    var socket = new SockJS('/websocket');
+    var options = {
+        transports: ["websocket"]
+    };
+    var socket = new SockJS('/websocket', null, options);
     stompClient = Stomp.over(socket);
+    stompClient.debug = null;
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
@@ -24,6 +29,8 @@ function connect() {
         stompClient.subscribe('/topic/broadcast', function (result) {
             dealBroadcastMsg(result.body);
         });
+    }, function(err) {
+        console.log(err);
     });
 }
 
