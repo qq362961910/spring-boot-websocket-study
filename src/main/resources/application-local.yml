@@ -16,3 +16,8 @@ application:
       anonymous-topic-set: [
               "${application.websocket.session.destination-prefix}/sync/time",
       ]
+
+#rocketmq:
+#    name-server: 127.0.0.1
+#    producer:
+#        group: "websocket-stomp-test"
